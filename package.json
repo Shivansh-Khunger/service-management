@@ -1,0 +1,33 @@
+{
+  "name": "service-1",
+  "version": "0.1.0",
+  "description": "A brief description of your app",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start-dev": "dotenvx run --env-file=.env.development -- nodemon index.js",
+    "start": "dotenvx run --env-file=.env.production -- nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shivansh Khunger",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^0.15.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1",
+    "nodemon": "^3.0.3",
+    "pino": "^8.18.0",
+    "pino-http": "^9.0.0",
+    "pino-pretty": "^10.3.1",
+    "ua-parser-js": "^1.0.37",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1"
+  }
+}
