@@ -1,0 +1,89 @@
+import mongoose from "mongoose";
+
+const businessSchema = mongoose.Schema(
+	{
+		orgName: {
+			type: String,
+			required: true,
+		},
+		orgOwner: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
+
+		openingTime: {
+			type: Date,
+			required: true,
+		},
+		closingTime: {
+			type: Date,
+			required: true,
+		},
+
+		phoneNumber: {
+			type: String,
+			required: true,
+		},
+		landLine: {
+			type: String,
+			required: true,
+		},
+		email: {
+			type: String,
+			required: true,
+		},
+		website: {
+			type: String,
+			default: null,
+		},
+		orgImageUrls: {
+			type: [String],
+			default: [],
+		},
+		geoLocation: {
+			type: [Number],
+			index: "2d", // 0 index long, 1 index lat
+			required: true,
+		},
+		upiId: { type: String, required: true },
+
+		managerContact: {
+			managerPhoneNumber: {
+				type: String,
+				default: null,
+			},
+			managerEmail: {
+				type: String,
+				default: null,
+			},
+		},
+
+		// model yet to be made.
+
+		// businessType: {
+		// 	type: mongoose.Schema.Types.ObjectId,
+		// 	ref: "businessTypeMaster",
+		// },
+		// businessCategory: {
+		// 	type: mongoose.Schema.Types.ObjectId,
+		// 	ref: "categoryMaster",
+		// },
+		// businessSubCategory: {
+		// 	type: mongoose.Schema.Types.ObjectId,
+		// 	ref: "subCategoryMaster",
+		// },
+
+		brands: {
+			type: [String],
+			default: [],
+		},
+	},
+	{
+		timestamp: true,
+		autoIndex: true,
+	},
+);
+
+const business = mongoose.model("Business", businessSchema);
+export default business;
