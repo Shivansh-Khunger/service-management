@@ -3,6 +3,11 @@ import user from "../models/user";
 import generateRes from "../utils/resGenerator";
 
 async function checkForImei(req, res, next) {
+	// check for non mobile device
+	if (!req.checkForImei) {
+		next();
+	}
+
 	//check for imei number
 	let resPayload = generateRes();
 
