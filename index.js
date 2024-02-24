@@ -20,10 +20,10 @@ await connectToDb();
 
 // listen
 app.listen(PORT, () => {
-  logger.info(`-> now listening at http://localhost:${PORT}/`);
+	logger.info(`-> now listening at http://localhost:${PORT}/`);
 });
 
 // listen base route
 app.get("/", (req, res) => {
-  res.send("Welcome to service-1 of IJUJU.");
+	res.send("Welcome to service-1 of IJUJU.");
 });

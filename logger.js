@@ -6,9 +6,9 @@ import pinoHttp from "pino-http";
 import pretty from "pino-pretty";
 
 const stream = pretty({
-  levelFirst: true,
-  colorize: true,
-  ignore: "time,hostname,pid",
+	levelFirst: true,
+	colorize: true,
+	ignore: "time,hostname,pid",
 });
 
 export const logger = pino({}, stream);
