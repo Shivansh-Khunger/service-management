@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const businessSchema = mongoose.Schema(
 	{
-		orgName: {
+		name: {
 			type: String,
 			required: true,
 		},
-		orgOwner: {
+		owner: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: true,
@@ -37,7 +37,7 @@ const businessSchema = mongoose.Schema(
 			type: String,
 			default: null,
 		},
-		orgImageUrls: {
+		imageUrls: {
 			type: [String],
 			default: [],
 		},
