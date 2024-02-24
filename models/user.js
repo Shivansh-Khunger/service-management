@@ -1,142 +1,141 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
-  {
-    firstName: {
-      type: String,
-      required: [true, "First Name is required."],
-    },
+	{
+		firstName: {
+			type: String,
+			required: [true, "First Name is required."],
+		},
 
-    lastName: {
-      type: String,
-      required: [true, "Last Name is required."],
-    },
+		lastName: {
+			type: String,
+			required: [true, "Last Name is required."],
+		},
 
-    email: {
-      type: String,
-      required: [true, "Email is required."],
-      unique: true,
-    },
+		email: {
+			type: String,
+			required: [true, "Email is required."],
+			unique: true,
+		},
 
-    phoneNumber: {
-      type: String,
-      required: [true, "Phone Number is required."],
-      unique: true,
-    },
+		phoneNumber: {
+			type: String,
+			required: [true, "Phone Number is required."],
+			unique: true,
+		},
 
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-    },
+		password: {
+			type: String,
+			required: [true, "Password is required"],
+		},
 
-    referalCode: {
-      type: String,
-    },
+		referalCode: {
+			type: String,
+		},
 
-    profilePic: {
-      type: String,
-    },
+		profilePic: {
+			type: String,
+		},
 
-    countryCode: {
-      type: String,
-    },
+		countryCode: {
+			type: String,
+		},
 
-    imeiNumber: {
-      type: String,
-      default: "",
-    },
+		imeiNumber: {
+			type: String,
+			default: "",
+		},
 
-    isActive: Boolean,
+		isActive: Boolean,
 
-    interestArray: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "subCategoryMaster",
-      },
-    ],
+		interestArray: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "subCategoryMaster",
+			},
+		],
 
-    geoLocation: {
-      type: [Number],
-      index: "2d", // 0 index longi, 1 index lati
-    },
+		geoLocation: {
+			type: [Number],
+			index: "2d", // 0 index longi, 1 index lati
+		},
 
-    mailSent: {
-      type: Boolean,
-      default: false,
-    },
+		mailSent: {
+			type: Boolean,
+			default: false,
+		},
 
-    postDealMail: {
-      type: Boolean,
-      default: false,
-    },
+		postDealMail: {
+			type: Boolean,
+			default: false,
+		},
 
-    pushToken: String,
+		pushToken: String,
 
-    pushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		pushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    dealbookpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		dealbookpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    addbusinesstpfavpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		addbusinesstpfavpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    dealstatuschangepushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		dealstatuschangepushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    manageraddedpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		manageraddedpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    sendinvitepushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		sendinvitepushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    newdealpostedpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		newdealpostedpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    broadcastpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		broadcastpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    messagesendpushTokenActivate: {
-      type: Boolean,
-      default: true,
-    },
+		messagesendpushTokenActivate: {
+			type: Boolean,
+			default: true,
+		},
 
-    gpsTracking: {
-      type: Boolean,
-      default: true,
-    },
+		gpsTracking: {
+			type: Boolean,
+			default: true,
+		},
 
-    bounty: {
-      type: Number,
-      default: 0,
-    },
+		bounty: {
+			type: Number,
+			default: 0,
+		},
 
-    createdOn: {
-      type: Date,
-      default: Date.now(),
-    },
-  },
-  {
-    timestamp: true,
-    autoIndex: true,
-    versionKey: false,
-  }
+		createdOn: {
+			type: Date,
+			default: Date.now(),
+		},
+	},
+	{
+		timestamp: true,
+		autoIndex: true,
+	},
 );
 
 // TODO -> Relocate these functions
