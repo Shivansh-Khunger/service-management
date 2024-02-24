@@ -6,6 +6,9 @@ import ifUserExists from "../../helpers/userExists.js";
 import generateReferal from "../../utils/referalGenerator.js";
 import generateRes from "../../utils/resGenerator.js";
 
+// TODO -> remove uneseccay let & replace with const
+// TODO -> think about auth.
+
 export async function registerNewUser(req, res) {
 	let resPayload = generateRes();
 
@@ -166,17 +169,19 @@ export async function deleteUser(req, res) {
 
 		let userId = mongoose.Types.ObjectId(req.params.id);
 
-		await Promise.all([
-			Banner.remove({ user: userId }),
-			Broadcast.remove({ user: userId }),
-			ImAvailable.remove({ user: userId }),
-			Imoccupiedby.remove({ user: userId }),
-			ProductDeal.remove({ user: userId }),
-			ProductMaster.remove({ user: userId }),
-			UserBusiness.remove({ user: userId }),
-		]);
+		// TODO -> all models are not here yet. 
 
-		let messageFromDb = await User.findByIdAndDelete({ _id: userId });
+		// await Promise.all([
+		// 	Banner.remove({ user: userId }),
+		// 	Broadcast.remove({ user: userId }),
+		// 	ImAvailable.remove({ user: userId }),
+		// 	Imoccupiedby.remove({ user: userId }),
+		// 	ProductDeal.remove({ user: userId }),
+		// 	ProductMaster.remove({ user: userId }),
+		// 	UserBusiness.remove({ user: userId }),
+		// ]);
+
+		let messageFromDb = await user.findByIdAndDelete({ _id: userId });
 
 		if (messageFromDb.acknowledged == true && messageFromDb.deletedCount == 1) {
 			resPayload.message = "User deleted successfully";
