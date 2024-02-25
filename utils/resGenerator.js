@@ -16,6 +16,10 @@ class ResponsePayload {
 		this.hasError = true;
 		this.message = message;
 	}
+
+	setConflict(message) {
+		this.message = message;
+	}
 }
 
 export default ResponsePayload;
