@@ -4,13 +4,13 @@ import hashPassword from "../../helpers/hashPassword.js";
 import ifUserExists from "../../helpers/userExists.js";
 
 import generateReferal from "../../utils/referalGenerator.js";
-import generateRes from "../../utils/resGenerator.js";
+import ResponsePayload from "../../utils/resGenerator.js";
 
-// TODO -> remove uneseccay let & replace with const
-// TODO -> think about auth.
+// TODO -> implement schema validation with JOI.
+// TODO -> think & implement auth soln.
 
-export async function registerNewUser(req, res) {
-	let resPayload = generateRes();
+export async function registerNewUser(req, res, next) {
+	const resPayload = new ResponsePayload();
 
 	try {
 		if (!req.body.email) {
@@ -55,7 +55,7 @@ export async function registerNewUser(req, res) {
 			// hash password
 			const hashedPassword = await hashPassword(req.body.password);
 
-			let newUser = await user.create({
+			const newUser = await user.create({
 				firstName: req.body.firstName,
 
 				lastName: req.body.lastName,
@@ -130,9 +130,9 @@ export async function registerNewUser(req, res) {
 
 			// commonController.sendEmail(mailObj);
 
-			resPayload.isSuccess = true;
-			resPayload.message = "User registered succesfully.";
-			resPayload.data = createdUser;
+			const resMessage = "user registered succesfully.";
+
+			resPayload.setSuccess(resMessage, newUser);
 
 			res.log.info(
 				resPayload,
@@ -140,8 +140,9 @@ export async function registerNewUser(req, res) {
 			);
 			return res.status(201).json(resPayload);
 		} else {
-			resPayload.message =
-				"User already exists with given eMail or phoneNumber.";
+			const resMessage = `user already exists with given eMail or phoneNumber.`;
+
+			resPayload.setConflict(resMessage);
 
 			res.log.info(
 				resPayload,
@@ -150,26 +151,19 @@ export async function registerNewUser(req, res) {
 			return res.status(409).json(resPayload);
 		}
 	} catch (err) {
-		resPayload.message = "Server Error.";
-		resPayload.hasError = true;
+		err.funcName = `registerNewUser`;
 
-		res.log.error(
-			err,
-			"-> an error has occured in the registerNewUser function",
-		);
-		return res.status(500).json(resPayload);
+		next(err);
 	}
 }
 
-export async function deleteUser(req, res) {
-	let resPayload = generateRes();
+export async function deleteUser(req, res, next) {
+	const resPayload = new ResponsePayload();
 
 	try {
-		// imei check now is a middleware.
+		const userId = mongoose.Types.ObjectId(req.params.id);
 
-		let userId = mongoose.Types.ObjectId(req.params.id);
-
-		// TODO -> all models are not here yet. 
+		// TODO -> all models are not implemented yet.
 
 		// await Promise.all([
 		// 	Banner.remove({ user: userId }),
@@ -181,26 +175,24 @@ export async function deleteUser(req, res) {
 		// 	UserBusiness.remove({ user: userId }),
 		// ]);
 
-		let messageFromDb = await user.findByIdAndDelete({ _id: userId });
+		const messageFromDb = await user.findByIdAndDelete({ _id: userId });
 
 		if (messageFromDb.acknowledged == true && messageFromDb.deletedCount == 1) {
-			resPayload.message = "User deleted successfully";
-			resPayload.isSuccess = true;
+			const resMessage = "user deleted successfully";
 
-			res.log.info(resPayload, "-> response for deleteUser function");
+			resPayload.setSuccess(resMessage);
+
+			res.log.info(resPayload, "-> response payload for deleteUser function");
 			res.status(200).json(resPayload);
 		} else {
-			resPayload.message = "User not deleted/not found";
-			resPayload.isSuccess = false;
+			resPayload.setConflict(resMessage);
 
-			res.log.info(resPayload, "-> response for deleteUser function");
+			res.log.info(resPayload, "-> response payload for deleteUser function");
 			res.status(401).json(resPayload);
 		}
-	} catch (error) {
-		resPayload.message = "Server Error.";
-		resPayload.hasError = true;
+	} catch (err) {
+		err.funcName = `deleteUser`;
 
-		res.log.error(err, "-> an error has occured in the deleteUser function");
-		res.status(500).json(resPayload);
+		next(err);
 	}
 }

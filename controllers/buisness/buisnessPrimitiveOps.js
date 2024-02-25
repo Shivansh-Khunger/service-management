@@ -1,9 +1,9 @@
 import business from "../../models/business.js";
 
-import generateRes from "../../utils/resGenerator.js";
+import ResponsePayload from "../../utils/resGenerator.js";
 
-export async function newBusiness(req, res) {
-	const resPayload = generateRes();
+export async function newBusiness(req, res, next) {
+	const resPayload = new ResponsePayload();
 
 	try {
 		const newBusiness = await business.create({
@@ -33,21 +33,17 @@ export async function newBusiness(req, res) {
 			brands: req.body.businessBrands,
 		});
 
-		resPayload.message = `-> business with name -:${req.body.businessName} created by user with id -: ${req.body.businessOwner}`;
-		resPayload.isSuccess = true;
-
+		resPayload.setSuccess(
+			`-> business with name -:${req.body.businessName} created by user with id -: ${req.body.businessOwner}`,
+			newBusiness,
+		);
 		res.log.info(resPayload, "-> response payload for newBusiness function");
 
 		return res.status(201).json(resPayload);
 	} catch (err) {
-		resPayload.message = "server error.";
-		resPayload.hasError = true;
-
-		res.log.error(
-			err,
-			"-> server error has occured in the newBusiness function",
-		);
-		return res.status(500).json(resPayload);
+		err.funcName = `newBusiness`;
+		
+		next(err);
 	}
 }
 
