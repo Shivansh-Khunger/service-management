@@ -47,8 +47,6 @@ export async function newBusiness(req, res, next) {
 	}
 }
 
-// TODO -> implement delBusiness.
-
 export async function delBusiness(req, res, next) {
 	const resPayload = new ResponsePayload();
 
