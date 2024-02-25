@@ -24,4 +24,6 @@ export const newBusinessSchema = Joi.object({
 	businessBrands: Joi.array().items(Joi.string()),
 });
 
-export const delBusinessSchema = Joi.object({});
+export const delBusinessSchema = Joi.object({
+	businessId: Joi.string().required(),
+});
