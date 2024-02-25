@@ -37,18 +37,42 @@ export async function newBusiness(req, res, next) {
 			`-> business with name -:${req.body.businessName} created by user with id -: ${req.body.businessOwner}`,
 			newBusiness,
 		);
-		res.log.info(resPayload, "-> response payload for newBusiness function");
 
+		res.log.info(resPayload, "-> response for newBusiness function");
 		return res.status(201).json(resPayload);
 	} catch (err) {
 		err.funcName = `newBusiness`;
-		
+
 		next(err);
 	}
 }
 
 // TODO -> implement delBusiness.
 
-export async function delBusiness(req, res) {
-	const resPayload = generateRes();
+export async function delBusiness(req, res, next) {
+	const resPayload = new ResponsePayload();
+
+	try {
+		const deletedBusiness = await business.findByIdAndDelete(req.params.id);
+
+		if (deletedBusiness.deletedCount === 1) {
+			const resMessage = `business with id-: ${req.params.id} has been successfully deleted.`;
+
+			resPayload.setSuccess(resMessage);
+
+			res.log.info(resPayload, `-> response for delBusiness function`);
+			return res.status(200).json(resPayload);
+		} else {
+			const err = new Error(
+				`business with id-: ${req.params.id} could not be deleted.`,
+			);
+			err.funcName = `delBusiness`;
+
+			next(err);
+		}
+	} catch (err) {
+		err.funcName = `delBusiness`;
+
+		next(err);
+	}
 }
