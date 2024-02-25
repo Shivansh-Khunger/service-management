@@ -1,46 +1,9 @@
-import Joi from "joi";
-
 import business from "../../models/business.js";
+
 import generateRes from "../../utils/resGenerator.js";
-
-const schema = Joi.object({
-	businessName: Joi.string().required(),
-	businessOwner: Joi.string().required(),
-
-	businessOpeningTime: Joi.date().required(),
-	businessClosingTime: Joi.date().required(),
-
-	businessPhoneNumber: Joi.string().required(),
-	businessLandline: Joi.string(),
-	businessEmail: Joi.string().email().required(),
-	businessWebsite: Joi.string().uri(),
-	businessImageUrls: Joi.array().items(Joi.string().uri()),
-	businessGeoLocation: Joi.array().items(Joi.number()).length(2).required(),
-	businessUpiId: Joi.string().required(),
-
-	managerPhoneNumber: Joi.string(),
-	managerEmail: Joi.string().email(),
-	businessType: Joi.string(),
-	businessCategory: Joi.string(),
-	businessSubCategory: Joi.string(),
-
-	businessBrands: Joi.array().items(Joi.string()),
-});
 
 export async function newBusiness(req, res) {
 	const resPayload = generateRes();
-	const { err } = schema.validate(req.body);
-
-	if (err) {
-		resPayload.message = err.details[0].message;
-		resPayload.hasError = true;
-
-		res.log.error(
-			err,
-			"-> input validation error has occured in the newBusiness function",
-		);
-		return res.status(400).json(resPayload);
-	}
 
 	try {
 		const newBusiness = await business.create({
@@ -86,4 +49,10 @@ export async function newBusiness(req, res) {
 		);
 		return res.status(500).json(resPayload);
 	}
+}
+
+// TODO -> implement delBusiness.
+
+export async function delBusiness(req, res) {
+	const resPayload = generateRes();
 }
