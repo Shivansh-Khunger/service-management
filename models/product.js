@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
 	{
+		// Product identification
 		name: {
 			type: String,
 			required: true,
@@ -10,25 +11,28 @@ const productSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		description: { type: String, default: null },
 
+		// Stock information
 		openingStock: {
 			type: String,
 			required: true,
 		},
+		stockType: { type: String, required: true },
 
-		description: { type: String, default: null },
-
+		// Product details
 		batchNo: { type: String, default: null },
-
 		manufacturingDate: { type: Date, default: null },
 		expiryDate: { type: Date, default: null },
 
+		// Pricing
 		unitMrp: { type: Number, required: true },
 		sellingPrice: { type: Number, required: true },
 
+		// Images
 		images: { type: [String], default: [] },
 
-		// flexible attributes
+		// Flexible attributes
 		attributes: [
 			{
 				// The name of the attribute. This could be anything like 'color', 'size', 'weight', etc.
@@ -41,15 +45,14 @@ const productSchema = new mongoose.Schema(
 			},
 		],
 
-		stockType: { type: String, required: true },
-
+		// Country code
 		countryCode: { type: String, required: true },
 
+		// Business and user information
 		businessId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "business",
 		},
-
 		userId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "user",
