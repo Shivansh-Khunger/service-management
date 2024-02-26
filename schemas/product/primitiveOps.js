@@ -1,5 +1,7 @@
 import Joi from "joi";
 
+// Input Validation schemas for productPrimitveOps.
+// Create the schema for newProduct controller.
 export const newProductSchema = Joi.object({
 	// Product identification
 	name: Joi.string().required(),
@@ -38,6 +40,8 @@ export const newProductSchema = Joi.object({
 	userId: Joi.string().required(),
 });
 
+// Create the schema for delProduct controller.
 export const delProductSchema = Joi.object({
+	//Product Id
 	productId: Joi.string().required(),
 });
