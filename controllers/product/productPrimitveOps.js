@@ -50,3 +50,30 @@ export async function newProduct(req, res, next) {
 		next(err);
 	}
 }
+
+export async function delProduct(req, res, next) {
+	const resPayload = new ResponsePayload();
+
+	try {
+		const deletedProduct = await product.findByIdAndDelete(req.params.id);
+
+		if (deletedProduct.deletedCount === 1) {
+			const resMessage = `product with id-: ${req.params.id} has been successfully deleted.`;
+
+			resPayload.setSuccess(resMessage);
+
+			res.log.info(resPayload, `-> response for delProduct function`);
+		} else {
+			const err = new Error(
+				`business with id-: ${req.params.id} could not be deleted.`,
+			);
+			err.funcName = `delProduct`;
+
+			next(err);
+		}
+	} catch (err) {
+		err.funcName = `delProduct`;
+
+		next(err);
+	}
+}
