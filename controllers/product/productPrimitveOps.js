@@ -3,38 +3,39 @@ import product from "../../models/product.js";
 import ResponsePayload from "../../utils/resGenerator.js";
 
 export async function newProduct(req, res, next) {
+	const { product } = req.body;
 	const resPayload = new ResponsePayload();
 
 	try {
 		const newProduct = await product.create({
 			// Product identification
-			name: req.body.product.name,
-			brandName: req.body.product.brandName,
-			description: req.body.product.description,
+			name: product.name,
+			brandName: product.brandName,
+			description: product.description,
 
 			// Stock information
-			openingStock: req.body.product.openingStock,
-			stockType: req.body.product.stockType,
+			openingStock: product.openingStock,
+			stockType: product.stockType,
 
 			// Pricing
-			unitMrp: req.body.product.unitMrp,
-			sellingPrice: req.body.product.sellingPrice,
+			unitMrp: product.unitMrp,
+			sellingPrice: product.sellingPrice,
 
 			// Product details
-			batchNo: req.body.product.batchNo,
-			manufacturingDate: req.body.product.manufacturingDate,
-			expiryDate: req.body.product.expiryDate,
-			attributes: req.body.product.attributes,
+			batchNo: product.batchNo,
+			manufacturingDate: product.manufacturingDate,
+			expiryDate: product.expiryDate,
+			attributes: product.attributes,
 
 			// Images
-			images: req.body.product.images,
+			images: product.images,
 
 			// Business and user information
-			businessId: req.body.product.businessId,
-			userId: req.body.product.userId,
+			businessId: product.businessId,
+			userId: product.userId,
 
 			// Country code
-			countryCode: req.body.product.countryCode,
+			countryCode: product.countryCode,
 		});
 
 		resPayload.setSuccess(
