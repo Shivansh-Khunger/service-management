@@ -16,7 +16,6 @@ const productSchema = new mongoose.Schema(
 			required: true,
 		},
 
-		specification: { type: String, default: null },
 		description: { type: String, default: null },
 
 		batchNo: { type: String, default: null },
@@ -29,18 +28,20 @@ const productSchema = new mongoose.Schema(
 
 		images: { type: [String], default: [] },
 
-		// TODO -> adminstrative descison pending for sizes.
-		// sizes: { type: [], default: null },
+		// flexible attributes
+		attributes: [
+			{
+				// The name of the attribute. This could be anything like 'color', 'size', 'weight', etc.
+				name: { type: String, required: true },
 
-		colors: { type: [String], default: null },
+				// The value of the attribute. This could be any type of data, hence mongoose.Schema.Types.Mixed is used.
+				// For example, if the attribute name is 'color', the value could be 'red'.
+				// If the attribute name is 'size', the value could be 'M'.
+				value: { type: mongoose.Schema.Types.Mixed, required: true },
+			},
+		],
 
-		weight: { type: Number, default: null },
-		weightUnit: { type: String, default: "kg" }, // 'kg', 'lb', etc.
-
-		volume: { type: Number, default: null },
-		volumeUnit: { type: String, required: true, default: "liters" }, // 'liters', 'gallons', etc.
-
-		stockType: { type: [String], default: [], required: true },
+		stockType: { type: String, required: true },
 
 		countryCode: { type: String, required: true },
 
