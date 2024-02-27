@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema(
 
 		// Stock information
 		openingStock: {
-			type: String,
+			type: Number,
 			required: true,
 		},
 		stockType: { type: String, required: true },
