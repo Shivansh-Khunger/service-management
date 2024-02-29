@@ -2,103 +2,124 @@ import product from "../../models/product.js";
 
 import ResponsePayload from "../../utils/resGenerator.js";
 
-// This function creates a new product.
-// It takes a request object, a response object, and a next middleware function as parameters.
+// Function to creates a new product
 export async function newProduct(req, res, next) {
-    // Extract the product from the request body
-    const { product } = req.body;
+	const funcName = `newProduct`;
 
-    // Create a new response payload
-    const resPayload = new ResponsePayload();
+	// Create a new response payload
+	const resPayload = new ResponsePayload();
 
-    try {
-        // Attempt to create the new product
-        const newProduct = await product.create({
-            // Set the product identification details
-            name: product.name,
-            brandName: product.brandName,
-            description: product.description,
+	// Extract the product from the request body
+	const { productData } = req.body;
 
-            // Set the stock information
-            openingStock: product.openingStock,
-            stockType: product.stockType,
+	try {
+		// Attempt to create the new product
+		const newProduct = await product.create({
+			// Set the product identification details
+			name: productData.name,
+			brandName: productData.brandName,
+			description: productData.description,
 
-            // Set the pricing details
-            unitMrp: product.unitMrp,
-            sellingPrice: product.sellingPrice,
+			// Set the stock information
+			openingStock: productData.openingStock,
+			stockType: productData.stockType,
 
-            // Set the product details
-            batchNo: product.batchNo,
-            manufacturingDate: product.manufacturingDate,
-            expiryDate: product.expiryDate,
-            attributes: product.attributes,
+			// Set the pricing details
+			unitMrp: productData.unitMrp,
+			sellingPrice: productData.sellingPrice,
 
-            // Set the product images
-            images: product.images,
+			// Set the product details
+			batchNo: productData.batchNo,
+			manufacturingDate: productData.manufacturingDate,
+			expiryDate: productData.expiryDate,
+			attributes: productData.attributes,
 
-            // Set the business and user information
-            businessId: product.businessId,
-            userId: product.userId,
+			// Set the product images
+			images: productData.images,
 
-            // Set the country code
-            countryCode: product.countryCode,
-        });
+			// Set the business and user information
+			businessId: productData.businessId,
+			userId: productData.userId,
 
-        // Set the success response payload
-        resPayload.setSuccess(
-            `-> business with name -:${req.body.product.name} created by user with id -: ${req.body.product.userId} under the business -: ${req.body.product.businessId}`,
-            newProduct,
-        );
+			// Set the country code
+			countryCode: productData.countryCode,
+		});
 
-        // Log the response payload
-        res.log.info(resPayload, "-> response for newProduct function");
+		let resMessage = ``;
+		let resLogMessage = `-> response for ${funcName} controller`;
 
-        // Send the response with a 201 status code
-        return res.status(201).json(resPayload);
-    } catch (err) {
-        // If an error occurs, set the function name on the error and pass it to the next middleware
-        err.funcName = `newProduct`;
+		if (newProduct) {
+			// Set the success response payload
+			resMessage = `request to create product-: ${req.body.productData.name} under business-: ${req.body.productData.businessId} is successfull.`;
 
-        next(err);
-    }
+			resPayload.setSuccess(resMessage, newProduct);
+
+			// Log the response payload
+			res.log.info(resPayload, resLogMessage);
+
+			// Send the response with a 201 status code
+			return res.status(201).json(resPayload);
+		} else {
+			resMessage = `request to create product-: ${req.body.productData.name} under business-: ${req.body.productData.businessId} is not successfull.`;
+
+			resPayload.setConflict(resMessage);
+
+			res.log.info(resPayload, resLogMessage);
+
+			return res.status(409).json(resPayload);
+		}
+	} catch (err) {
+		// If an error occurs, set the function name on the error and pass it to the next middleware
+		err.funcName = funcName;
+
+		next(err);
+	}
 }
 
-// This function deletes a product by its ID.
-// It takes a request object, a response object, and a next middleware function as parameters.
+// Function to delete a product by its ID
 export async function delProduct(req, res, next) {
-    // Create a new response payload
-    const resPayload = new ResponsePayload();
+	const funcName = `delProduct`;
 
-    try {
-        // Attempt to find and delete the product by its Id
-        const deletedProduct = await product.findByIdAndDelete(req.params.id);
+	// Create a new response payload
+	const resPayload = new ResponsePayload();
 
-        // If the product was successfully deleted
-        if (deletedProduct.deletedCount === 1) {
-            // Create a success message
-            const resMessage = `product with id-: ${req.params.id} has been successfully deleted.`;
+	const { productId } = req.params;
 
-            // Set the success response payload
-            resPayload.setSuccess(resMessage);
+	try {
+		// Attempt to find and delete the product by its Id
+		const deletedProduct = await product.findByIdAndDelete(productId);
 
-            // Log the response payload
-            res.log.info(resPayload, `-> response for delProduct function`);
-        } else {
-            // If the product could not be deleted, create an error
-            const err = new Error(
-                `business with id-: ${req.params.id} could not be deleted.`,
-            );
+		const resLogMessage = `-> response for ${funcName} controller`;
 
-            // Set the function name on the error
-            err.funcName = `delProduct`;
+		// If the product was successfully deleted
+		if (deletedProduct.deletedCount === 1) {
+			// Create a success message
+			const resMessage = `request to delete product-: ${productId} is successfull.`;
 
-            // Pass the error to the next middleware
-            next(err);
-        }
-    } catch (err) {
-        // If an error occurs, set the function name on the error and pass it to the next middleware
-        err.funcName = `delProduct`;
+			// Set the success response payload
+			resPayload.setSuccess(resMessage);
 
-        next(err);
-    }
+			// Log the response payload
+			res.log.info(resPayload, resLogMessage);
+		} else {
+			// If the product could not be deleted, create an error
+			const err = new Error(
+				`request to delete product-: ${productId} is not successfull.`,
+			);
+
+			// Set the function name on the error
+			err.funcName = `delProduct`;
+
+			// Set response code
+			err.staus = 409;
+
+			// Pass the error to the next middleware
+			next(err);
+		}
+	} catch (err) {
+		// If an error occurs, set the function name on the error and pass it to the next middleware
+		err.funcName = funcName;
+
+		next(err);
+	}
 }
