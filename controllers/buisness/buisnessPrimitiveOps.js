@@ -1,75 +1,136 @@
+// Importing necessary modules
 import business from "../../models/business.js";
 
 import ResponsePayload from "../../utils/resGenerator.js";
 
+// Function to create a new business
 export async function newBusiness(req, res, next) {
+	const funcName = `newBusiness`;
+
+	// Create a new instance of ResponsePayload
 	const resPayload = new ResponsePayload();
 
+	// Extract business object from request body
+	const { businessData } = req.body;
+
 	try {
+		// Create a new business with the data from the request body
 		const newBusiness = await business.create({
-			name: req.body.businessName,
-			owner: req.body.businessOwner,
+			// Business basic details
+			name: businessData.businessName,
+			owner: businessData.businessOwner,
 
-			openingTime: req.body.businessOpeningTime,
-			closingTime: req.body.businessClosingTime,
+			// Business operation timings
+			openingTime: businessData.businessOpeningTime,
+			closingTime: businessData.businessClosingTime,
 
-			phoneNumber: req.body.businessPhoneNumber,
-			landline: req.body.businessLandline,
-			email: req.body.businessEmail,
-			website: req.body.businessWebsite,
-			imageUrls: req.body.businessImageUrls,
-			geoLocation: req.body.businessGeoLocation,
-			upiId: req.body.businessUpiId,
+			// Business contact details
+			phoneNumber: businessData.businessPhoneNumber,
+			landline: businessData.businessLandline,
+			email: businessData.businessEmail,
 
+			// Business online presence
+			website: businessData.businessWebsite,
+			imageUrls: businessData.businessImageUrls,
+
+			// Business location and payment details
+			geoLocation: businessData.businessGeoLocation,
+			upiId: businessData.businessUpiId,
+
+			// Manager contact details
 			managerContact: {
-				managerPhoneNumber: req.body.managerPhoneNumber,
-				managerEmail: req.body.managerEmail,
+				managerPhoneNumber: businessData.managerPhoneNumber,
+				managerEmail: businessData.managerEmail,
 			},
 
-			businessType: req.body.businessType,
-			businessCategory: req.body.businessCategory,
-			businessSubCategory: req.body.businessSubCategory,
+			// Business type and category
+			businessType: businessData.businessType,
+			businessCategory: businessData.businessCategory,
+			businessSubCategory: businessData.businessSubCategory,
 
-			brands: req.body.businessBrands,
+			// Brands
+			brands: businessData.businessBrands,
 		});
 
-		resPayload.setSuccess(
-			`-> business with name -:${req.body.businessName} created by user with id -: ${req.body.businessOwner}`,
-			newBusiness,
-		);
+		let resMessage = ``;
+		let resLogMessage = `-> response for ${funcName} function`;
 
-		res.log.info(resPayload, "-> response for newBusiness function");
-		return res.status(201).json(resPayload);
+		if (newBusiness) {
+			// Create a success message
+			resMessage = `Request to create business-: ${req.body.businessName} by user -:${req.body.businessOwner} is successfull.`;
+
+			// Set the success response payload
+			resPayload.setSuccess(resMessage, newBusiness);
+
+			// Log the response payload
+			res.log.info(resPayload, resLogMessage);
+
+			// Return the response payload with status 201
+			return res.status(201).json(resPayload);
+		} else {
+			resMessage = `Request to create business-: ${req.body.businessName} by user -:${req.body.businessOwner} is not successfull.`;
+
+			resPayload.setConflict(resMessage);
+
+			res.log.info(resPayload, resLogMessage);
+
+			return res.status(409).json(resPayload);
+		}
 	} catch (err) {
-		err.funcName = `newBusiness`;
+		// If an error occurs, set the function name in the error and pass it to the next middleware
+		err.funcName = funcName;
 
 		next(err);
 	}
 }
 
+// Function to delete a business
 export async function delBusiness(req, res, next) {
+	const funcName = `delBusiness`;
+
+	// Create a new instance of ResponsePayload
 	const resPayload = new ResponsePayload();
 
+	// Extract business id from request params
+	const { businessId } = req.params;
+
 	try {
-		const deletedBusiness = await business.findByIdAndDelete(req.params.id);
+		// Delete the business with the id from the request parameters
+		const deletedBusiness = await business.findByIdAndDelete(businessId);
 
+		const resLogMessage = `-> response for ${funcName} controller`;
+
+		// If the business was successfully deleted
 		if (deletedBusiness.deletedCount === 1) {
-			const resMessage = `business with id-: ${req.params.id} has been successfully deleted.`;
+			// Set the success message
+			const resMessage = `Request to delete business-: ${businessId} is successfull.`;
 
+			// Set the success response payload
 			resPayload.setSuccess(resMessage);
 
-			res.log.info(resPayload, `-> response for delBusiness function`);
+			// Log the response payload
+			res.log.info(resPayload, resLogMessage);
+
+			// Return the response payload with status 200
 			return res.status(200).json(resPayload);
 		} else {
-			const err = new Error(
-				`business with id-: ${req.params.id} could not be deleted.`,
-			);
-			err.funcName = `delBusiness`;
+			// If the business could not be deleted, create a new error
+			const errMessage = `Request to delete business-: ${businessId} is not successfull.`;
 
+			const err = new Error(errMessage);
+
+			// Set the function name in the error
+			err.funcName = funcName;
+
+			// Set reponse code
+			err.status = 404;
+
+			// Pass the error to the next middleware
 			next(err);
 		}
 	} catch (err) {
-		err.funcName = `delBusiness`;
+		// If an error occurs, set the function name in the error and pass it to the next middleware
+		err.funcName = funcName;
 
 		next(err);
 	}

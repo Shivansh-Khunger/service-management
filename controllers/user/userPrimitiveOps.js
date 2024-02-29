@@ -6,40 +6,30 @@ import ifUserExists from "../../helpers/userExists.js";
 import generateReferal from "../../utils/referalGenerator.js";
 import ResponsePayload from "../../utils/resGenerator.js";
 
-// TODO -> implement schema validation with JOI.
 // TODO -> think & implement auth soln.
 
-export async function registerNewUser(req, res, next) {
+// Function to creates a new user
+export async function newUser(req, res, next) {
+	const funcName = `newUser`;
+
+	// Create a new response payload
 	const resPayload = new ResponsePayload();
 
+	// Extract the user data from the request body
+	const { userData } = req.body;
+
 	try {
-		if (!req.body.email) {
-			resPayload.message = "Email missing.";
-			return res.json(resPayload);
-		}
+		// Check if a user with the same email or phone number already exists
+		const ifUser = await ifUserExists(userData.email, userData.phoneNumber);
 
-		if (!req.body.firstName) {
-			resPayload.message = "First Name missing.";
-			return res.json(resPayload);
-		}
+		let resMessage;
+		let resLogMessage = `-> response payload for ${funcName} controller`;
 
-		if (!req.body.password) {
-			resPayload.message = "Password missing.";
-			return res.json(resPayload);
-		}
+		if (!ifUser) {
+			// Get the referral code from the user data
+			let referalCode = userData.referalCode;
 
-		if (!req.body.phoneNumber) {
-			resPayload.message = "PhoneNumber missing.";
-			return res.json(resPayload);
-		}
-
-		const ifUser = await ifUserExists(req.body.email, req.body.phoneNumber);
-
-		if (ifUser) {
-			// get referal code.
-			let referalCode = req.body.referalCode;
-
-			// update bounty of the user whoose referal code was provided.
+			// If a referral code was provided, increment the bounty of the user who provided the referral code
 			if (referalCode != "") {
 				const userWithReferalCode = user.updateOne(
 					{
@@ -49,120 +39,73 @@ export async function registerNewUser(req, res, next) {
 				);
 			}
 
-			// generate referal code for the user itself.
+			// Generate a referral code for the new user
 			referalCode = generateReferal();
 
-			// hash password
-			const hashedPassword = await hashPassword(req.body.password);
+			// Hash the user's password
+			const hashedPassword = await hashPassword(userData.password);
 
+			// Attempt to create a new user with the provided data
 			const newUser = await user.create({
-				firstName: req.body.firstName,
-
-				lastName: req.body.lastName,
-
-				email: req.body.email,
-
-				phoneNumber: req.body.phoneNumber,
-
+				name: userData.name,
+				email: userData.email,
+				phoneNumber: userData.phoneNumber,
 				password: hashedPassword,
-
 				referalCode: referalCode,
-
-				countryCode: req.body.countryCode,
-
-				pushToken: req.body.pushToken,
-
-				profilePic: req.body.profilePic,
-
-				imeiNumber: req.body.imeiNumber,
-
+				countryCode: userData.countryCode,
+				pushToken: userData.pushToken,
+				profilePic: userData.profilePic,
+				imeiNumber: userData.imeiNumber,
 				geoLocation: [
-					req.body.geoLocation.longi || 0,
-					req.body.geoLocation.lati || 0,
+					userData.geoLocation.longi || 0,
+					userData.geoLocation.lati || 0,
 				],
 			});
 
-			// unable to understand from here ->
+			// If the user was created successfully, send a success response
+			if (newUser) {
+				resMessage = `the request to create a user with name-: ${userData.name} and email -:${userData.email} is successfull.`;
+				resPayload.setSuccess(resMessage, newUser);
 
-			// let phoneNum = req.body.phoneNumber;
+				res.log.info(resPayload, resLogMessage);
 
-			// if (phoneNum.length > 10) {
-			// 	phoneNum = phoneNum.substr(phoneNum.length - 10); // => "Tabs1"
-			// }
+				return res.status(201).json(resPayload);
+			} else {
+				// If the user was not created successfully, send a conflict response
+				resMessage = `the request to create a user with name-: ${userData.name} and email -:${userData.email} is not successfull.`;
 
-			// let regex = new RegExp([phoneNum].join(""), "i");
+				resPayload.setConflict(resMessage);
 
-			// let usrFoundWithContactList = await MyContactList.find({
-			// 	phone: {
-			// 		$regex: phoneNum,
-			// 	},
-			// });
+				res.log.info(resPayload, resLogMessage);
 
-			// console.log(usrFoundWithContactList);
-
-			// usrFoundWithContactList.forEach((element) => {
-			// 	element.ijujuId = newUser._id;
-			// 	element.save();
-			// });
-
-			//find user from contact sync
-
-			// -> to here
-
-			// TODO -> make a serverless function for sending emails
-
-			// send email here
-
-			// let mailObj = {
-			//   to: createdUser.email,
-			//   from: process.env.TRANSACTIONS_FROM_EMAIL,
-			//   subject: "Welcome to ijuju.",
-			//   templateId: "c55194be-622d-48b2-bdc3-ffbdd4e5796b",
-			//   // await emailTemplates.getTemplateIdFromName(
-			//   //   "register-user"
-			//   // ),
-			//   text: ".",
-			//   substitutions: {
-			//     userName: createdUser.email,
-			//     firstName: createdUser.firstName,
-			//   },
-			// };
-
-			// commonController.sendEmail(mailObj);
-
-			const resMessage = "user registered succesfully.";
-
-			resPayload.setSuccess(resMessage, newUser);
-
-			res.log.info(
-				resPayload,
-				"-> response payload for registerNewUser function",
-			);
-			return res.status(201).json(resPayload);
+				return res.status(409).json(resPayload);
+			}
 		} else {
-			const resMessage = `user already exists with given eMail or phoneNumber.`;
+			// If a user with the same email or phone number already exists, send a conflict response
+			resMessage = `The request to create a user with the email-: ${userData.email} and phone number-:${userData.phoneNumber} was not successful because a user with these details already exists.`;
 
 			resPayload.setConflict(resMessage);
 
-			res.log.info(
-				resPayload,
-				"-> response payload for registerNewUser function",
-			);
+			res.log.info(resPayload, resLogMessage);
+
 			return res.status(409).json(resPayload);
 		}
 	} catch (err) {
-		err.funcName = `registerNewUser`;
+		// If an error occurs, pass it to the next middleware
+		err.funcName = funcName;
 
 		next(err);
 	}
 }
 
 export async function deleteUser(req, res, next) {
+	const funcName = `deleteUser`;
+
 	const resPayload = new ResponsePayload();
 
-	try {
-		const userId = mongoose.Types.ObjectId(req.params.id);
+	const { userId } = req.params;
 
+	try {
 		// TODO -> all models are not implemented yet.
 
 		// await Promise.all([
@@ -177,21 +120,30 @@ export async function deleteUser(req, res, next) {
 
 		const messageFromDb = await user.findByIdAndDelete({ _id: userId });
 
+		let resMessage = ``;
 		if (messageFromDb.acknowledged == true && messageFromDb.deletedCount == 1) {
-			const resMessage = "user deleted successfully";
+			resMessage = `the request to delete the user-: ${userId} is successfull.`;
 
 			resPayload.setSuccess(resMessage);
 
-			res.log.info(resPayload, "-> response payload for deleteUser function");
+			res.log.info(
+				resPayload,
+				`-> response payload for ${funcName} controller`,
+			);
 			res.status(200).json(resPayload);
 		} else {
+			resMessage = `the request to delete the user-: ${userId} is not successfull.`;
+
 			resPayload.setConflict(resMessage);
 
-			res.log.info(resPayload, "-> response payload for deleteUser function");
+			res.log.info(
+				resPayload,
+				`-> response payload for ${funcName} controller`,
+			);
 			res.status(401).json(resPayload);
 		}
 	} catch (err) {
-		err.funcName = `deleteUser`;
+		err.funcName = funcName;
 
 		next(err);
 	}
