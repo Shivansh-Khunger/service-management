@@ -1,25 +1,53 @@
 import user from "../models/user";
 
-async function ifUserExists(tempUserEmail, tempUserPhoneNum) {
-	const ifUser = await user.findOne(
+export async function ifUserExistsByEmail(userEmail, userPhoneNumber) {
+	const user = await user.findOne(
 		{
 			$or: [
 				{
-					email: tempUserEmail,
+					email: userEmail,
 				},
 				{
-					phoneNumber: tempUserPhoneNum,
+					phoneNumber: userPhoneNumber,
 				},
 			],
 		},
 		{ _id: true },
 	);
 
-	if (ifUser) {
+	if (user) {
 		return true;
 	}
 
 	return false;
 }
 
-export default ifUserExists;
+export async function ifUserExistsById(userId) {
+	const user = await user.findById(
+		{
+			userId,
+		},
+		{ _id: true },
+	);
+
+	if (user) {
+		return true;
+	}
+
+	return false;
+}
+
+export async function getUserImei(userId) {
+	const user = await user.findById(
+		{
+			userId,
+		},
+		{ _id: true, imeiNumber: true },
+	);
+
+	if (user) {
+		return user;
+	}
+
+	return null;
+}
