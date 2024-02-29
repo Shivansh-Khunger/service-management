@@ -2,8 +2,7 @@ import product from "../../models/product.js";
 
 import ResponsePayload from "../../utils/resGenerator.js";
 
-// This function updates a product.
-// It takes a request object, a response object, and a next middleware function as parameters.
+// Function to update a product
 export async function updateProduct(req, res, next) {
 	const funcName = `updateProduct`;
 
@@ -22,6 +21,7 @@ export async function updateProduct(req, res, next) {
 		);
 
 		let resMessage = ``;
+		let resLogMessage = `-> response for ${funcName} controller`;
 
 		// If the product was successfully updated
 		if (updatedProduct) {
@@ -32,7 +32,7 @@ export async function updateProduct(req, res, next) {
 			resPayload.setSuccess(resMessage, updatedProduct);
 
 			// Log the response payload
-			res.log.info(resPayload, `-> response for ${funcName} controller`);
+			res.log.info(resPayload, resLogMessage);
 
 			// Send the response with a 200 status code
 			return res.status(200).json(resPayload);
@@ -40,17 +40,14 @@ export async function updateProduct(req, res, next) {
 			// If the product could not be updated, create a conflict message
 			resMessage = `product with id-: ${req.params.id} is not updated.`;
 
-			// Set the conflict response payload
 			resPayload.setConflict(resMessage);
 
-			// Log the response payload
-			res.log.info(resPayload, `-> response for ${funcName} controller`);
+			res.log.info(resPayload, resLogMessage);
 
-			// Send the response with a 409 status code
 			return res.status(409).json(resPayload);
 		}
 	} catch (err) {
-		// If an error occurs, set the function name on the error and pass it to the next middleware
+		// If an error occurs, set the function name on the error and pass it to the error handling middleware
 		err.funcName = funcName;
 
 		next(err);
