@@ -92,7 +92,7 @@ export async function delProduct(req, res, next) {
 		const resLogMessage = `-> response for ${funcName} controller`;
 
 		// If the product was successfully deleted
-		if (deletedProduct.deletedCount === 1) {
+		if (deletedProduct._id.toString() === productId) {
 			// Create a success message
 			const resMessage = `request to delete product-: ${productId} is successfull.`;
 
@@ -101,6 +101,8 @@ export async function delProduct(req, res, next) {
 
 			// Log the response payload
 			res.log.info(resPayload, resLogMessage);
+
+			return res.status(200).json(resPayload);
 		} else {
 			// If the product could not be deleted, create an error
 			const err = new Error(
