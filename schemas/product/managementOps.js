@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 export const updateProductPramasSchema = Joi.object({
-	productId: Joi.string().required(),
+	productId: Joi.string().length(24).required(),
 });
 
 export const updateProductBodySchema = Joi.object({
@@ -11,8 +11,14 @@ export const updateProductBodySchema = Joi.object({
 	description: Joi.string(),
 
 	// Stock information
-	openingStock: Joi.number(),
 	stockType: Joi.string(),
+
+	// Quantity information
+	quantity: Joi.object({
+		no: Joi.number().required(),
+		billNo: Joi.number(),
+		firmName: Joi.string(),
+	}),
 
 	// Product details
 	batchNo: Joi.string(),
@@ -38,6 +44,6 @@ export const updateProductBodySchema = Joi.object({
 	countryCode: Joi.string(),
 
 	// Business and user information
-	businessId: Joi.string(),
-	userId: Joi.string(),
+	businessId: Joi.string().length(24),
+	userId: Joi.string().length(24),
 });
