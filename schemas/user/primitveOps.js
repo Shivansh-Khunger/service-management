@@ -4,7 +4,7 @@ import Joi from "joi";
 const userInfo = {
 	name: Joi.string().required(),
 	email: Joi.string().email().required(),
-	phoneNumber: Joi.string().required(),
+	phoneNumber: Joi.string().min(10).max(15).required(),
 	profilePic: Joi.string(),
 	referalCode: Joi.string(),
 	countryCode: Joi.string(),
@@ -59,6 +59,6 @@ export const newUserSchema = Joi.object({
 	...bountyInfo,
 });
 
-export const deleteUserSchema = Joi.object({
-	userId: Joi.string().required(),
+export const delUserSchema = Joi.object({
+	userId: Joi.string().length(24).required(),
 });
