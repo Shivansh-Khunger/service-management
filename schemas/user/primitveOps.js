@@ -1,8 +1,13 @@
 import Joi from "joi";
 
+export const USER_NAME_REGEX = "/(^[a-zA-Z][a-zA-Zs]{0,20}[a-zA-Z]$)/";
+
+export const USER_PASS_REGEX =
+	"^(?:(?=.*?p{N})(?=.*?[p{S}p{P} ])(?=.*?p{Lu})(?=.*?p{Ll}))[^p{C}]{8,16}$";
+
 // User Information
 const userInfo = {
-	name: Joi.string().required(),
+	name: Joi.string().pattern(USER_NAME_REGEX).required(),
 	email: Joi.string().email().required(),
 	phoneNumber: Joi.string().min(10).max(15).required(),
 	profilePic: Joi.string(),
@@ -14,7 +19,7 @@ const userInfo = {
 
 // Security Information
 const securityInfo = {
-	password: Joi.string().required(),
+	password: Joi.string().pattern(USER_PASS_REGEX).required(),
 };
 
 // User Preferences
