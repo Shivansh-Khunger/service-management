@@ -10,12 +10,13 @@ export async function updateProduct(req, res, next) {
 	const resPayload = new ResponsePayload();
 
 	// Extract the updated product data from the request body
-	const latestProduct = req.body;
+	const {latestProduct} = req.body;
 
+	const { productId } = req.params;
 	try {
 		// Attempt to find the product by its ID and update it
 		const updatedProduct = await product.findByIdAndUpdate(
-			req.params.id,
+			productId,
 			latestProduct,
 			{ new: true },
 		);
@@ -26,7 +27,7 @@ export async function updateProduct(req, res, next) {
 		// If the product was successfully updated
 		if (updatedProduct) {
 			// Create a success message
-			resMessage = `product with id-: ${req.params.id} is updated.`;
+			resMessage = `product with id-: ${productId} is updated.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, updatedProduct);
@@ -38,7 +39,7 @@ export async function updateProduct(req, res, next) {
 			return res.status(200).json(resPayload);
 		} else {
 			// If the product could not be updated, create a conflict message
-			resMessage = `product with id-: ${req.params.id} is not updated.`;
+			resMessage = `product with id-: ${productId} is not updated.`;
 
 			resPayload.setConflict(resMessage);
 
