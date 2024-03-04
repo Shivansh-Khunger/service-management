@@ -1,6 +1,6 @@
-import user from "../../models/user";
+import user from "../../models/user.js";
 
-import ResponsePayload from "../../utils/resGenerator";
+import ResponsePayload from "../../utils/resGenerator.js";
 
 export async function updateUser(req, res, next) {
 	const funcName = `updateUser`;
