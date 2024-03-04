@@ -6,9 +6,10 @@ const businessSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		owner: {
+
+		userId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
+			ref: "user",
 			required: true,
 		},
 
