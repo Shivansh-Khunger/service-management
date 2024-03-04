@@ -1,7 +1,7 @@
 import user from "../../models/user.js";
 
 import hashPassword from "../../helpers/hashPassword.js";
-import ifUserExists from "../../helpers/userExists.js";
+import { ifUserExistsByEmail } from "../../helpers/userExists.js";
 
 import generateReferal from "../../utils/referalGenerator.js";
 import ResponsePayload from "../../utils/resGenerator.js";
@@ -20,7 +20,10 @@ export async function newUser(req, res, next) {
 
 	try {
 		// Check if a user with the same email or phone number already exists
-		const ifUser = await ifUserExists(userData.email, userData.phoneNumber);
+		const ifUser = await ifUserExistsByEmail(
+			userData.email,
+			userData.phoneNumber,
+		);
 
 		let resMessage;
 		let resLogMessage = `-> response payload for ${funcName} controller`;
@@ -98,7 +101,7 @@ export async function newUser(req, res, next) {
 	}
 }
 
-export async function deleteUser(req, res, next) {
+export async function delUser(req, res, next) {
 	const funcName = `deleteUser`;
 
 	const resPayload = new ResponsePayload();
@@ -118,10 +121,13 @@ export async function deleteUser(req, res, next) {
 		// 	UserBusiness.remove({ user: userId }),
 		// ]);
 
-		const messageFromDb = await user.findByIdAndDelete({ _id: userId });
+		// mongoose returns the 
+		const messageFromDb = await user.findByIdAndDelete(userId);
 
 		let resMessage = ``;
-		if (messageFromDb.acknowledged == true && messageFromDb.deletedCount == 1) {
+
+		console.log(messageFromDb);
+		if (messageFromDb._id == userId) {
 			resMessage = `the request to delete the user-: ${userId} is successfull.`;
 
 			resPayload.setSuccess(resMessage);
