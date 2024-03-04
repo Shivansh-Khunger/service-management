@@ -1,29 +1,32 @@
 import Joi from "joi";
 
+// Export & initialize UPI id regex
+export const UPI_ID_REGEX = "^[w.-_]{3,}@[a-zA-Z]{3,}";
+
 export const newBusinessSchema = Joi.object({
-	businessName: Joi.string().required(),
-	businessOwner: Joi.string().required(),
+	name: Joi.string().required(),
+	userId: Joi.string().length(24).required(),
 
-	businessOpeningTime: Joi.date().required(),
-	businessClosingTime: Joi.date().required(),
+	openingTime: Joi.date().required(),
+	closingTime: Joi.date().required(),
 
-	businessPhoneNumber: Joi.string().required(),
-	businessLandline: Joi.string(),
-	businessEmail: Joi.string().email().required(),
-	businessWebsite: Joi.string().uri(),
-	businessImageUrls: Joi.array().items(Joi.string().uri()),
-	businessGeoLocation: Joi.array().items(Joi.number()).length(2).required(),
-	businessUpiId: Joi.string().required(),
+	phoneNumber: Joi.string().required(),
+	landline: Joi.string(),
+	email: Joi.string().email().required(),
+	website: Joi.string().uri(),
+	imageUrls: Joi.array().items(Joi.string().uri()),
+	geoLocation: Joi.array().items(Joi.number()).length(2).required(),
+	upiId: Joi.string().pattern(UPI_ID_REGEX).required(),
 
 	managerPhoneNumber: Joi.string(),
 	managerEmail: Joi.string().email(),
-	businessType: Joi.string(),
-	businessCategory: Joi.string(),
-	businessSubCategory: Joi.string(),
+	type: Joi.string(),
+	category: Joi.string(),
+	subCategory: Joi.string(),
 
-	businessBrands: Joi.array().items(Joi.string()),
+	brands: Joi.array().items(Joi.string()),
 });
 
 export const delBusinessSchema = Joi.object({
-	businessId: Joi.string().required(),
+	businessId: Joi.string().length(24).required(),
 });

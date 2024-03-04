@@ -1,42 +1,45 @@
 import Joi from "joi";
 
+// Import UPI id regex
+import { UPI_ID_REGEX } from "./primitiveOps";
+
 // Define a schema for the parameters
 export const updatedBusinessParamsSchema = Joi.object({
-	businessId: Joi.string().required(),
+	businessId: Joi.string().length(24).required(),
 });
 
 // Define a schema for the body
 export const updatedBusinessBodySchema = Joi.object({
-	// Business basic details
-	businessName: Joi.string(),
-	businessOwner: Joi.string(),
+	// Basic details
+	name: Joi.string(),
+	user: Joi.string().length(24),
 
-	// Business operation timings
-	businessOpeningTime: Joi.date(),
-	businessClosingTime: Joi.date(),
+	// Operation timings
+	openingTime: Joi.date(),
+	closingTime: Joi.date(),
 
-	// Business contact details
-	businessPhoneNumber: Joi.string(),
-	businessLandline: Joi.string(),
-	businessEmail: Joi.string().email(),
+	// Contact details
+	phoneNumber: Joi.string(),
+	landline: Joi.string(),
+	email: Joi.string().email(),
 
-	// Business online presence
-	businessWebsite: Joi.string().uri(),
-	businessImageUrls: Joi.array().items(Joi.string().uri()),
+	// Online presence
+	website: Joi.string().uri(),
+	imageUrls: Joi.array().items(Joi.string().uri()),
 
-	// Business location and payment details
-	businessGeoLocation: Joi.array().items(Joi.number()).length(2),
-	businessUpiId: Joi.string(),
+	// Location and payment details
+	geoLocation: Joi.array().items(Joi.number()).length(2),
+	upiId: Joi.string().pattern(UPI_ID_REGEX),
 
 	// Manager contact details
 	managerPhoneNumber: Joi.string(),
 	managerEmail: Joi.string().email(),
 
-	// Business type and category
-	businessType: Joi.string(),
-	businessCategory: Joi.string(),
-	businessSubCategory: Joi.string(),
+	// Type and category
+	type: Joi.string(),
+	category: Joi.string(),
+	subCategory: Joi.string(),
 
 	// Brands
-	businessBrands: Joi.array().items(Joi.string()),
+	brands: Joi.array().items(Joi.string()),
 });
