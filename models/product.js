@@ -20,7 +20,47 @@ const productSchema = new mongoose.Schema(
 		},
 		stockType: { type: String, required: true },
 
-		// Product details
+		// Quantity information
+		quantity: {
+			no: {
+				type: Number,
+				required: true,
+			},
+
+			billNo: { type: Number, default: null },
+			firmName: {
+				type: String,
+				default: null,
+			},
+
+			createdAt: { type: Date, default: Date.now() },
+		},
+
+		quantityHistory: {
+			type: [
+				{
+					quantity: {
+						no: {
+							type: Number,
+							required: true,
+						},
+
+						billNo: { type: Number, default: null },
+
+						firmName: {
+							type: String,
+							default: null,
+						},
+
+						createdAt: { type: Date, required: true },
+					},
+					updatedAt: { type: Date, default: Date.now() },
+				},
+			],
+			default: [],
+		},
+
+		// Product de tails
 		batchNo: { type: String, default: null },
 		manufacturingDate: { type: Date, default: null },
 		expiryDate: { type: Date, default: null },
@@ -35,6 +75,8 @@ const productSchema = new mongoose.Schema(
 		// Flexible attributes
 		attributes: [
 			{
+				_id: false, // This will prevent MongoDB from automatically assigning an _id
+
 				// The name of the attribute. This could be anything like 'color', 'size', 'weight', etc.
 				name: { type: String, required: true },
 
