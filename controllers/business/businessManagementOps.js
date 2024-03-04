@@ -1,6 +1,6 @@
-import business from "../../models/business";
+import business from "../../models/business.js";
 
-import ResponsePayload from "../../utils/resGenerator";
+import ResponsePayload from "../../utils/resGenerator.js";
 
 // Function to update a business
 export async function updateBusiness(req, res, next) {
@@ -9,13 +9,15 @@ export async function updateBusiness(req, res, next) {
 	// Create a new response payload
 	const resPayload = new ResponsePayload();
 
+	const { businessId } = req.params;
+
 	// Extract the updated business data from the request body
 	const { latestBusiness } = req.body;
 
 	try {
 		// Attempt to find the business by its ID and update it
 		const updatedBusiness = await business.findByIdAndUpdate(
-			req.params.businessId,
+			businessId,
 			latestBusiness,
 			{ new: true },
 		);

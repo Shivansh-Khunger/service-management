@@ -57,7 +57,7 @@ export async function newBusiness(req, res, next) {
 
 		if (newBusiness) {
 			// Create a success message
-			resMessage = `Request to create business-: ${req.body.businessName} by user -:${req.body.businessOwner} is successfull.`;
+			resMessage = `request to create business-: ${businessData.businessName} by user -:${businessData.businessOwner} is successfull.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, newBusiness);
@@ -68,7 +68,7 @@ export async function newBusiness(req, res, next) {
 			// Return the response payload with status 201
 			return res.status(201).json(resPayload);
 		} else {
-			resMessage = `Request to create business-: ${req.body.businessName} by user -:${req.body.businessOwner} is not successfull.`;
+			resMessage = `request to create business-: ${businessData.businessName} by user -:${businessData.businessOwner} is not successfull.`;
 
 			resPayload.setConflict(resMessage);
 
@@ -100,8 +100,10 @@ export async function delBusiness(req, res, next) {
 
 		const resLogMessage = `-> response for ${funcName} controller`;
 
+		console.log(deletedBusiness);
+
 		// If the business was successfully deleted
-		if (deletedBusiness.deletedCount === 1) {
+		if (deletedBusiness._id.toString() === businessId) {
 			// Set the success message
 			const resMessage = `Request to delete business-: ${businessId} is successfull.`;
 
