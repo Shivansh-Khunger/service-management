@@ -13,15 +13,14 @@ insert_final_newline = true
 [*.{js,ts,css,html}]
 charset = utf-8
 
-# 2 space indentation
+# Tab indentation
 [*.{js,ts,css,html,json}]
-indent_style = space
-indent_size = 2
+indent_style = tab
+indent_size = 4
 
 # Matches the exact files either package.json or .travis.yml
 [{package.json,.travis.yml}]
-indent_style = space
-indent_size = 2
+indent_style = tab
 
 # Tab indentation (no size specified)
 [Makefile]
@@ -29,10 +28,14 @@ indent_style = tab
 
 # Indentation override for all JS under lib directory
 [*.js]
-indent_style = space
-indent_size = 2
+indent_style = tab
+indent_size = 4
 
 # Matches the exact file .editorconfig
 [.editorconfig]
-indent_style = space
-indent_size = 2
+indent_style = tab
+indent_size = 4
+
+# Markdown files often use trailing whitespace to indicate line breaks
+[*.md]
+trim_trailing_whitespace = false
