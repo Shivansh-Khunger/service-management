@@ -4,12 +4,12 @@ import Joi from "joi";
 import { UPI_ID_REGEX } from "./primitiveOps";
 
 // Define a schema for the parameters
-export const updatedBusinessParamsSchema = Joi.object({
+export const updatedBusinessParams = Joi.object({
 	businessId: Joi.string().length(24).required(),
 });
 
 // Define a schema for the body
-export const updatedBusinessBodySchema = Joi.object({
+export const updatedBusinessBody = Joi.object({
 	// Basic details
 	name: Joi.string(),
 	user: Joi.string().length(24),

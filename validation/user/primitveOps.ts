@@ -57,7 +57,7 @@ const bountyInfo = {
 };
 
 // Combine all the categories into one schema
-export const newUserSchema = Joi.object({
+export const newUser = Joi.object({
 	...userInfo,
 	...securityInfo,
 	...userPreferences,
@@ -66,6 +66,6 @@ export const newUserSchema = Joi.object({
 	...bountyInfo,
 });
 
-export const delUserSchema = Joi.object({
+export const delUser = Joi.object({
 	userId: Joi.string().length(24).required(),
 });

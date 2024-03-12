@@ -3,7 +3,7 @@ import Joi from "joi";
 // Export & initialize UPI id regex
 export const UPI_ID_REGEX = /^[w.-_]{3,}@[a-zA-Z]{3,}/;
 
-export const newBusinessSchema = Joi.object({
+export const newBusiness = Joi.object({
 	name: Joi.string().required(),
 	userId: Joi.string().length(24).required(),
 
@@ -27,6 +27,6 @@ export const newBusinessSchema = Joi.object({
 	brands: Joi.array().items(Joi.string()),
 });
 
-export const delBusinessSchema = Joi.object({
+export const delBusiness = Joi.object({
 	businessId: Joi.string().length(24).required(),
 });

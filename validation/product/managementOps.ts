@@ -1,10 +1,10 @@
 import Joi from "joi";
 
-export const updateProductPramasSchema = Joi.object({
+export const updateProductPramas = Joi.object({
 	productId: Joi.string().length(24).required(),
 });
 
-export const updateProductBodySchema = Joi.object({
+export const updateProductBody = Joi.object({
 	// Product identification
 	name: Joi.string(),
 	brandName: Joi.string(),
