@@ -2,22 +2,14 @@
 import express from "express";
 
 // Import controllers
-import * as userControllers from "../controllers/public/user/index";
+import * as userControllers from "../../controllers/public/user/index";
 
 // Import middlewares
-import { validateParams, validateBody } from "../middlewares/inputValidator";
-import handleError from "../middlewares/errorHandler";
+import handleError from "../../middlewares/errorHandler";
+import { validateBody, validateParams } from "../../middlewares/inputValidator";
 
-// Import schemas for validation
-import {
-	newUserSchema,
-	delUserSchema,
-} from "../validation/user/primitveOps";
-
-import {
-	updateUserParamsSchema,
-	updateUserBodySchema,
-} from "../validation/user/managementOps";
+// Import validation schemas
+import * as userSchemas from "../../validation/user/";
 
 // Initialize a new router
 const router = express.Router();
@@ -27,7 +19,7 @@ const router = express.Router();
 // The 'userData' entity in the request body is specifically validated
 router.post(
 	"/new",
-	validateBody({ schema: newUserSchema, entity: "userData" }),
+	validateBody({ schema: userSchemas.newUser, entity: "userData" }),
 	userControllers.newUser,
 );
 
@@ -35,7 +27,7 @@ router.post(
 // The route parameters are validated against the deleteUserSchema
 router.delete(
 	"/:userId",
-	validateParams({ schema: delUserSchema }),
+	validateParams({ schema: userSchemas.delUser }),
 	userControllers.delUser,
 );
 
@@ -44,8 +36,11 @@ router.delete(
 // The 'latestUser' entity in the request body is specifically validated against the updateUserBodySchema
 router.put(
 	"/:userId",
-	validateParams({ schema: updateUserParamsSchema }),
-	validateBody({ schema: updateUserBodySchema, entity: "latestUser" }),
+	validateParams({ schema: userSchemas.updateUserParams }),
+	validateBody({
+		schema: userSchemas.updateUserBody,
+		entity: "latestUser",
+	}),
 	userControllers.updateUser,
 );
 

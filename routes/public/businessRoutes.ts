@@ -2,24 +2,16 @@
 import express from "express";
 
 // Import business controllers
-import * as businessControllers from "../controllers/public/business/index";
+import * as businessControllers from "../../controllers/public/business/index";
 
 // Import validation middlewares
-import { validateParams, validateBody } from "../middlewares/inputValidator";
+import { validateBody, validateParams } from "../../middlewares/inputValidator";
 
 // Import error handling middleware
-import handleError from "../middlewares/errorHandler";
+import handleError from "../../middlewares/errorHandler";
 
 // Import schemas for validation
-import {
-	newBusinessSchema,
-	delBusinessSchema,
-} from "../validation/business/primitiveOps";
-
-import {
-	updatedBusinessParamsSchema,
-	updatedBusinessBodySchema,
-} from "../validation/business/managementOps";
+import * as businessSchemas from "../../validation/business/";
 
 // Initialize a new router
 const router = express.Router();
@@ -29,16 +21,19 @@ const router = express.Router();
 // The 'businessData' entity in the request body is specifically validated
 router.post(
 	"/new",
-	validateBody({ schema: newBusinessSchema, entity: "businessData" }),
-	businessControllers.newBusiness
+	validateBody({
+		schema: businessSchemas.newBusiness,
+		entity: "businessData",
+	}),
+	businessControllers.newBusiness,
 );
 
 // Define a DELETE route for deleting a business
 // The route parameters are validated against the delBusinessSchema
 router.delete(
 	"/:businessId",
-	validateParams({ schema: delBusinessSchema }),
-	businessControllers.delBusiness
+	validateParams({ schema: businessSchemas.delBusiness }),
+	businessControllers.delBusiness,
 );
 
 // Define a PUT route for updating a business
@@ -46,9 +41,12 @@ router.delete(
 // The request body is validated against the updatedBusinessBodySchema
 router.put(
 	"/:businessId",
-	validateParams({ schema: updatedBusinessParamsSchema }),
-	validateBody({ schema: updatedBusinessBodySchema, entity: "latestBusiness" }),
-	businessControllers.updateBusiness
+	validateParams({ schema: businessSchemas.updatedBusinessParams }),
+	validateBody({
+		schema: businessSchemas.updatedBusinessBody,
+		entity: "latestBusiness",
+	}),
+	businessControllers.updateBusiness,
 );
 
 // Use the handleError middleware for error handling
