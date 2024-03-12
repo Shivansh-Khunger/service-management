@@ -1,30 +1,30 @@
 // Import types
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // Import necessary modules
 import {
-	ifSubCategoryExistsByName,
 	ifSubCategoryExistsById,
+	ifSubCategoryExistsByName,
 } from "../helpers/subCategoryExists";
 
-import CustomError from "../utils/customError";
 import handleCatchError from "../utils/catchErrorHandler";
+import CustomError from "../utils/customError";
 
-function handleAbsentSubCategory(subCategoryAttr: string) {
-	const errMessage = `the request could not be completed because the sub-category-: ${subCategoryAttr} already exists.`;
-
-	const err = new CustomError(errMessage);
-	err.status = 400;
-
-	throw err;
+interface SubCategoryCheckOptions {
+	checkIn: "body" | "query" | "params";
+	entity: string;
 }
 
-export const checkForSubCategory = async (checkIn: string, entity: string) => {
+export const checkForSubCategory = ({
+	checkIn,
+	entity,
+}: SubCategoryCheckOptions) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		const funcName = "checkForSubCategory";
 
 		let subCategoryAttr: string;
 		let subCategoryExists: boolean;
+		let errMessage = "";
 		try {
 			switch (checkIn) {
 				case "body":
@@ -32,9 +32,14 @@ export const checkForSubCategory = async (checkIn: string, entity: string) => {
 
 					subCategoryExists = await ifSubCategoryExistsByName(subCategoryAttr);
 
-					if (!subCategoryExists) {
-						handleAbsentSubCategory(subCategoryAttr);
+					if (subCategoryExists) {
+						errMessage = `the request could not be completed because the sub-category-: ${subCategoryAttr} already exists.`;
+						const err = new CustomError(errMessage);
+						err.status = 400;
+
+						throw err;
 					}
+
 					next();
 					break;
 
@@ -48,8 +53,13 @@ export const checkForSubCategory = async (checkIn: string, entity: string) => {
 					subCategoryExists = await ifSubCategoryExistsById(subCategoryAttr);
 
 					if (!subCategoryExists) {
-						handleAbsentSubCategory(subCategoryAttr);
+						errMessage = `the request could not be completed because the sub-category-: ${subCategoryAttr} does not exist.`;
+						const err = new CustomError(errMessage);
+						err.status = 400;
+
+						throw err;
 					}
+
 					next();
 					break;
 
@@ -68,3 +78,5 @@ export const checkForSubCategory = async (checkIn: string, entity: string) => {
 		}
 	};
 };
+
+export default checkForSubCategory;

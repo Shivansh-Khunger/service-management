@@ -1,30 +1,28 @@
 // Import types
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // Import necessary modules
 import {
-	ifCategoryExistsByName,
 	ifCategoryExistsById,
+	ifCategoryExistsByName,
 } from "../helpers/categoryExists";
 
-import CustomError from "../utils/customError";
 import handleCatchError from "../utils/catchErrorHandler";
+import CustomError from "../utils/customError";
 
-function handleAbsentCategory(categoryAttr: string) {
-	const errMessage = `the request could not be completed because the category-: ${categoryAttr} already exists.`;
-
-	const err = new CustomError(errMessage);
-	err.status = 400;
-
-	throw err;
+interface CategoryCheckOptions {
+	checkIn: "body" | "query" | "params";
+	entity: string;
 }
 
-export const checkForCategory = (checkIn: string, entity: string) => {
+export const checkForCategory = ({ checkIn, entity }: CategoryCheckOptions) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		const funcName = "checkForCategory";
 
 		let categoryAttr: string;
 		let categoryExists: boolean;
+
+		let errMessage = "";
 		try {
 			switch (checkIn) {
 				case "body":
@@ -32,9 +30,15 @@ export const checkForCategory = (checkIn: string, entity: string) => {
 
 					categoryExists = await ifCategoryExistsByName(categoryAttr);
 
-					if (!categoryExists) {
-						handleAbsentCategory(categoryAttr);
+					if (categoryExists) {
+						errMessage = `the request could not be completed because the category-: ${categoryAttr} already exists.`;
+
+						const err = new CustomError(errMessage);
+						err.status = 400;
+
+						throw err;
 					}
+
 					next();
 					break;
 
@@ -48,8 +52,14 @@ export const checkForCategory = (checkIn: string, entity: string) => {
 					categoryExists = await ifCategoryExistsById(categoryAttr);
 
 					if (!categoryExists) {
-						handleAbsentCategory(categoryAttr);
+						errMessage = `the request could not be completed because the category-: ${categoryAttr} does not exist.`;
+
+						const err = new CustomError(errMessage);
+						err.status = 400;
+
+						throw err;
 					}
+
 					next();
 					break;
 
@@ -62,3 +72,5 @@ export const checkForCategory = (checkIn: string, entity: string) => {
 		}
 	};
 };
+
+export default checkForCategory;
