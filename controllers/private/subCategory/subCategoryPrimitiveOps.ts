@@ -70,7 +70,7 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 	const resPayload = new ResponsePayload();
 
 	// Extract the subcategory ID from the request parameters
-	const { subCategoryId } = req.params;
+	const { subCategoryName } = req.params;
 
 	try {
 		// Define the response messages
@@ -78,12 +78,13 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 		const resLogMessage = `-> response payload for ${funcName} controller`;
 
 		// Delete the subcategory
-		const deletedSubCategory =
-			await subCategory.findByIdAndDelete(subCategoryId);
+		const deletedSubCategory = await subCategory.findOneAndDelete({
+			name: subCategoryName,
+		});
 
 		if (deletedSubCategory) {
 			// If the subcategory was deleted successfully, set the success message
-			resMessage = `the request to delete a subCategory with id-: ${subCategoryId} is successfull.`;
+			resMessage = `the request to delete a subCategory with id-: ${subCategoryName} & name-: ${deletedSubCategory._id} is successfull.`;
 
 			// Set the response payload to success
 			resPayload.setSuccess(resMessage, deletedSubCategory);
@@ -95,7 +96,7 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the subcategory was not deleted successfully, set the conflict message
-		resMessage = `the request to delete a subCategory with id-: ${subCategoryId} is not successfull.`;
+		resMessage = `the request to delete a subCategory with name-: ${subCategoryName} is not successfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);
