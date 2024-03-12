@@ -6,10 +6,12 @@ import connectToDb from "./config/db";
 // Import internal modules
 import { httpLogger, logger } from "./logger";
 
-import businessRoutes from "./routes/businessRoutes";
-import productRoutes from "./routes/productRoutes";
 // Import route modules
-import userRoutes from "./routes/userRoutes";
+import categoryRoutes from "./routes/private/categoryRoutes";
+import subCategoryRoutes from "./routes/private/subCategoryRoutes";
+import businessRoutes from "./routes/public/businessRoutes";
+import productRoutes from "./routes/public/productRoutes";
+import userRoutes from "./routes/public/userRoutes";
 
 // Define the port on which the server will run
 const PORT = process.env.PORT || 3001;
@@ -55,3 +57,5 @@ const versionNumber = "v1";
 app.use(`/${versionNumber}/u`, userRoutes);
 app.use(`/${versionNumber}/b`, businessRoutes);
 app.use(`/${versionNumber}/p`, productRoutes);
+app.use(`/${versionNumber}/c`, categoryRoutes);
+app.use(`/${versionNumber}/sc`, subCategoryRoutes);
