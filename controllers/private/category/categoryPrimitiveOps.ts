@@ -62,7 +62,7 @@ export const newCategory: RequestHandler = async (req, res, next) => {
 };
 
 // Function to delete a category
-export const deleteCategory: RequestHandler = async (req, res, next) => {
+export const delCategory: RequestHandler = async (req, res, next) => {
 	// Define the function name for error handling
 	const funcName = "deleteCategory";
 
@@ -70,17 +70,22 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 	const resPayload = new ResponsePayload();
 
 	// Extract the category ID from the request parameters
-	const { categoryId } = req.params;
+	const { categoryName } = req.params;
 
 	try {
 		// Define the response messages
 		let resMessage = "";
 		const resLogMessage = `-> response payload for ${funcName} controller`;
 
+		// Delete the category
+		const deletedCategory = await category.findOneAndDelete({
+			name: categoryName,
+		});
+
 		// Delete all subcategories associated with the category
 		subCategory
 			.deleteMany({
-				categoryId: categoryId,
+				categoryId: deletedCategory?._id,
 			})
 			.catch((err) => {
 				// Add the function name to the error object for debugging
@@ -90,14 +95,9 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 				next(err);
 			});
 
-		// Delete the category
-		const deletedCategory = await category.findByIdAndDelete(categoryId, {
-			new: true,
-		});
-
-		if (deletedCategory) {
+		if (deletedCategory?.name === categoryName) {
 			// If the category was deleted successfully, set the success message
-			resMessage = `the request to delete a category with id-: ${categoryId} is successfull.`;
+			resMessage = `the request to delete a category with id-: ${deletedCategory?._id} and name -: ${categoryName} is successfull.`;
 
 			// Set the response payload to success
 			resPayload.setSuccess(resMessage, deletedCategory);
@@ -109,7 +109,7 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the category was not deleted successfully, set the conflict message
-		resMessage = `the request to delete a category with id-: ${categoryId} is not successfull.`;
+		resMessage = `the request to delete a category with name-: ${categoryName} is not successfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);
