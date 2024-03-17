@@ -4,7 +4,7 @@ import type { RequestHandler } from "express";
 // Importing necessary modules
 import product from "../../../models/product";
 
-import handleCatchError from "../../../utils/catchErrorHandler";
+import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // Function to update a product
@@ -52,7 +52,7 @@ export const updateProduct: RequestHandler = async (req, res, next) => {
 
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
