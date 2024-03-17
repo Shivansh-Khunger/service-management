@@ -5,7 +5,10 @@ import express from "express";
 import * as dealControllers from "../../controllers/public/deals";
 
 // Import validation middlewares
+import checkForBusiness from "../../middlewares/businessCheck";
+import checkForDeal from "../../middlewares/dealCheck";
 import { validateBody, validateParams } from "../../middlewares/inputValidator";
+import checkForProduct from "../../middlewares/productCheck";
 
 // Import error handling middleware
 import handleError from "../../middlewares/errorHandler";
@@ -25,6 +28,20 @@ router.post(
 		schema: dealSchemas.newDeal,
 		entity: "dealData",
 	}),
+	checkForBusiness({
+		checkIn: "body",
+		bodyEntity: "dealData",
+		entity: "businessId",
+		passIfExists: true,
+		key: "_id",
+	}),
+	checkForProduct({
+		checkIn: "body",
+		bodyEntity: "dealData",
+		entity: "productId",
+		passIfExists: true,
+		key: "_id",
+	}),
 	dealControllers.newDeal,
 );
 
@@ -33,6 +50,13 @@ router.post(
 router.delete(
 	"/:dealId",
 	validateParams({ schema: dealSchemas.delDeal }),
+	checkForDeal({
+		checkIn: "params",
+		bodyEntity: null,
+		entity: "dealId",
+		passIfExists: true,
+		key: "_id",
+	}),
 	dealControllers.delDeal,
 );
 

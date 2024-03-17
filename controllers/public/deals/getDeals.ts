@@ -1,12 +1,10 @@
 // Import types
 import type { RequestHandler } from "express";
 import type { PipelineStage } from "mongoose";
-import type { _IBusiness } from "../../../models/business";
-import type { _IProduct } from "../../../models/product";
 
 // Import necessary modules
-import user from "../../../models/user";
 import business from "../../../models/business";
+import user from "../../../models/user";
 
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
