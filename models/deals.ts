@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IDeal {
+type TDeal = {
 	name: string;
 	startDate: Date;
 	endDate: Date;
@@ -24,7 +24,9 @@ export interface IDeal {
 	productId: mongoose.Types.ObjectId;
 	businessId: mongoose.Types.ObjectId;
 	userId: mongoose.Types.ObjectId;
-}
+};
+
+export type T_idDeal = TDeal & { _id: string | mongoose.ObjectId };
 
 const dealSchema = new mongoose.Schema(
 	{
@@ -85,6 +87,6 @@ const dealSchema = new mongoose.Schema(
 	{ timestamp: true, autoIndex: true },
 );
 
-const Deal = mongoose.model<IDeal>("deal", dealSchema);
+const Deal = mongoose.model<TDeal>("deal", dealSchema);
 
 export default Deal;
