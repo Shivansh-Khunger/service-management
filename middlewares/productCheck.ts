@@ -1,86 +1,81 @@
 // Import types
 import type { NextFunction, Request, Response } from "express";
 import type mongoose from "mongoose";
-import type { T_idCategory } from "../models/category";
+import type { T_idProduct } from "../models/product";
 
 // Import necessary modules
-import ifCategoryExists from "../helpers/models/categoryExists";
+import ifProductExists from "../helpers/models/productExists";
 import validateDocumentExistence from "./helpers/valDocExistence";
 
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type CategoryCheckOptions =
+type ProductCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
 			entity: string;
 			passIfExists: boolean;
-			key: keyof T_idCategory;
+			key: keyof T_idProduct;
 	  }
 	| {
 			checkIn: "query" | "params";
 			bodyEntity: undefined | null;
 			entity: string;
 			passIfExists: boolean;
-			key: keyof T_idCategory;
+			key: keyof T_idProduct;
 	  };
 
-export const checkForCategory = ({
+// Middleware function to check if a product exists
+const checkForProduct = ({
 	checkIn,
 	bodyEntity,
 	entity,
 	passIfExists,
 	key = "name",
-}: CategoryCheckOptions) => {
+}: ProductCheckOptions) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
-		const collectionName = "Category";
-		const funcName = "checkForCategory";
+		// Define the function name for error handling
+		const collectionName = "Product";
+		const funcName = "checkForProduct";
 
 		let valToKey: string;
-		let categoryExists: { _id: mongoose.Types.ObjectId } | null | undefined;
+		let productExists: { _id: mongoose.Types.ObjectId } | null | undefined;
 
 		let errMessage: string;
 		try {
 			switch (checkIn) {
 				case "body":
 					valToKey = req.body[bodyEntity][entity];
-
-					categoryExists = await ifCategoryExists(next, {
+					productExists = await ifProductExists(next, {
 						[key]: valToKey,
 					});
 
 					validateDocumentExistence({
 						nextFuncion: next,
-						docExists: categoryExists,
+						docExists: productExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
-
 					break;
-
 				case "query":
 					// added for future use
 					break;
-
 				case "params":
-					valToKey = req.params[entity];
-
-					categoryExists = await ifCategoryExists(next, {
+					valToKey = req[checkIn][entity];
+					productExists = await ifProductExists(next, {
 						[key]: valToKey,
 					});
 
 					validateDocumentExistence({
 						nextFuncion: next,
-						docExists: categoryExists,
+						docExists: productExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
-
 					break;
-
 				default: {
 					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
 					const err = new CustomError(errMessage);
@@ -89,7 +84,6 @@ export const checkForCategory = ({
 				}
 			}
 		} catch (err) {
-			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
 			augmentAndForwardError({
 				next: next,
 				err: err,
@@ -100,4 +94,4 @@ export const checkForCategory = ({
 	};
 };
 
-export default checkForCategory;
+export default checkForProduct;

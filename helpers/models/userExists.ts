@@ -1,9 +1,9 @@
 // Import types
 import type mongoose from "mongoose";
-import type CustomError from "../utils/customError";
+import type CustomError from "../../utils/customError";
 
 // Import necessary modules
-import user from "../models/user";
+import user from "../../models/user";
 
 // Function to check if a user exists by email or phone number
 export async function ifUserExistsByEmail(
@@ -13,19 +13,16 @@ export async function ifUserExistsByEmail(
 	const funcName = "ifUserExistsByEmail";
 	try {
 		// Query the user collection for a user with the provided email or phone number
-		const userExists = await user.findOne(
-			{
-				$or: [
-					{
-						email: userEmail,
-					},
-					{
-						phoneNumber: userPhoneNumber,
-					},
-				],
-			},
-			{ _id: true },
-		);
+		const userExists = await user.exists({
+			$or: [
+				{
+					email: userEmail,
+				},
+				{
+					phoneNumber: userPhoneNumber,
+				},
+			],
+		});
 
 		// If a user was found, return true
 		if (userExists) {
@@ -50,12 +47,9 @@ export async function ifUserExistsById(userId: string | mongoose.ObjectId) {
 	const funcName = "ifUserExistsById";
 	try {
 		// Query the user collection for a user with the provided ID
-		const userExists = await user.findById(
-			{
-				userId,
-			},
-			{ _id: true },
-		);
+		const userExists = await user.exists({
+			_id: userId,
+		});
 
 		// If a user was found, return true
 		if (userExists) {

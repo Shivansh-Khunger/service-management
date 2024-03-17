@@ -4,7 +4,7 @@ import type { RequestHandler } from "express";
 // Import the necessary modules
 import subCategory from "../../../models/subCategory";
 
-import handleCatchError from "../../../utils/catchErrorHandler";
+import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // Function to create a new subcategory
@@ -56,8 +56,8 @@ export const newSubCategory: RequestHandler = async (req, res, next) => {
 		// Send the response payload
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
 
@@ -107,6 +107,6 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 		// Send the response payload
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };

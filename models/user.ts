@@ -1,5 +1,38 @@
 import mongoose from "mongoose";
 
+interface InterestArray {
+	type: mongoose.Schema.Types.ObjectId;
+	ref: string;
+}
+
+export interface IUser {
+	name: string;
+	profilePic?: string;
+	referalCode?: string;
+	countryCode?: string;
+	imeiNumber?: string;
+	isActive?: boolean;
+	password: string;
+	interestArray?: InterestArray[];
+	geoLocation?: number[];
+	mailSent?: boolean;
+	postDealMail?: boolean;
+	pushToken?: string;
+	pushTokenActivate?: boolean;
+	dealbookpushTokenActivate?: boolean;
+	addbusinesstpfavpushTokenActivate?: boolean;
+	dealstatuschangepushTokenActivate?: boolean;
+	manageraddedpushTokenActivate?: boolean;
+	sendinvitepushTokenActivate?: boolean;
+	newdealpostedpushTokenActivate?: boolean;
+	broadcastpushTokenActivate?: boolean;
+	messagesendpushTokenActivate?: boolean;
+	gpsTracking?: boolean;
+	bounty?: number;
+	email: string;
+	phoneNumber: string;
+}
+
 // User Information
 const userInfo = {
 	name: {
@@ -40,7 +73,7 @@ const userPreferences = {
 	interestArray: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "subCategoryMaster",
+			ref: "SubCategory",
 		},
 	],
 
@@ -152,8 +185,8 @@ const userSchema = new mongoose.Schema(
 	{
 		timestamp: true,
 		autoIndex: true,
-	}
+	},
 );
 
-const user = mongoose.model("User", userSchema);
+const user = mongoose.model<IUser>("User", userSchema);
 export default user;

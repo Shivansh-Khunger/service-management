@@ -1,63 +1,64 @@
 // Import types
 import type { NextFunction, Request, Response } from "express";
 import type mongoose from "mongoose";
-import type { T_idCategory } from "../models/category";
+import type { T_idDeal } from "../models/deals";
 
 // Import necessary modules
-import ifCategoryExists from "../helpers/models/categoryExists";
+import ifDealExists from "../helpers/models/dealExists";
 import validateDocumentExistence from "./helpers/valDocExistence";
 
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type CategoryCheckOptions =
+type DealCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
 			entity: string;
 			passIfExists: boolean;
-			key: keyof T_idCategory;
+			key: keyof T_idDeal;
 	  }
 	| {
 			checkIn: "query" | "params";
 			bodyEntity: undefined | null;
 			entity: string;
 			passIfExists: boolean;
-			key: keyof T_idCategory;
+			key: keyof T_idDeal;
 	  };
 
-export const checkForCategory = ({
+// Middleware function to check if a deal exists
+
+const checkForDeal = ({
 	checkIn,
 	bodyEntity,
 	entity,
 	passIfExists,
 	key = "name",
-}: CategoryCheckOptions) => {
+}: DealCheckOptions) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
-		const collectionName = "Category";
-		const funcName = "checkForCategory";
+		// Define the function name for error handling
+		const collectionName = "Deal";
+		const funcName = "checkForDeal";
 
 		let valToKey: string;
-		let categoryExists: { _id: mongoose.Types.ObjectId } | null | undefined;
+		let dealExists: { _id: mongoose.Types.ObjectId } | null | undefined;
 
 		let errMessage: string;
 		try {
 			switch (checkIn) {
 				case "body":
 					valToKey = req.body[bodyEntity][entity];
-
-					categoryExists = await ifCategoryExists(next, {
+					dealExists = await ifDealExists(next, {
 						[key]: valToKey,
 					});
 
 					validateDocumentExistence({
 						nextFuncion: next,
-						docExists: categoryExists,
+						docExists: dealExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
-
 					break;
 
 				case "query":
@@ -65,20 +66,18 @@ export const checkForCategory = ({
 					break;
 
 				case "params":
-					valToKey = req.params[entity];
-
-					categoryExists = await ifCategoryExists(next, {
+					valToKey = req[checkIn][entity];
+					dealExists = await ifDealExists(next, {
 						[key]: valToKey,
 					});
 
 					validateDocumentExistence({
 						nextFuncion: next,
-						docExists: categoryExists,
+						docExists: dealExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
-
 					break;
 
 				default: {
@@ -100,4 +99,5 @@ export const checkForCategory = ({
 	};
 };
 
-export default checkForCategory;
+// Export the middleware function
+export default checkForDeal;

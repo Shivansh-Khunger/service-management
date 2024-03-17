@@ -4,7 +4,7 @@ import type { RequestHandler } from "express";
 // Importing necessary modules
 import business from "../../../models/business";
 
-import handleCatchError from "../../../utils/catchErrorHandler";
+import augmentAndForwardError from "../../../utils/errorAugmenter";
 import CustomError from "../../../utils/customError";
 import ResponsePayload from "../../../utils/resGenerator";
 
@@ -81,8 +81,8 @@ export const newBusiness: RequestHandler = async (req, res, next) => {
 
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
 
@@ -101,8 +101,6 @@ export const delBusiness: RequestHandler = async (req, res, next) => {
 		const deletedBusiness = await business.findByIdAndDelete(businessId);
 
 		const resLogMessage = `-> response for ${funcName} controller`;
-
-		console.log(deletedBusiness);
 
 		// If the business was successfully deleted
 		if (deletedBusiness?._id.toString() === businessId) {
@@ -132,6 +130,6 @@ export const delBusiness: RequestHandler = async (req, res, next) => {
 		// Pass the error to the next middleware
 		next(err);
 	} catch (err) {
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
