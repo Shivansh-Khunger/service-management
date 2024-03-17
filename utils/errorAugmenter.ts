@@ -1,10 +1,8 @@
 // Importing types
 import type { NextFunction } from "express";
+import type CustomError from "./customError";
 
-// Importing necessary modules
-import CustomError from "./customError";
-
-interface HandleCatchErrorParams {
+interface augmentAndForwardErrorParams {
 	next: NextFunction;
 	// biome-ignore lint/suspicious/noExplicitAny: <error in express is of type any>
 	err: any;
@@ -14,19 +12,14 @@ interface HandleCatchErrorParams {
 	errStatus?: number;
 }
 
-const handleCatchError = ({
+const augmentAndForwardError = ({
 	next,
 	err,
 	funcName,
 	errMessage,
 	errLogMessage,
 	errStatus,
-}: HandleCatchErrorParams) => {
-	// Check if err is an instance of CustomError before casting
-	if (!(err instanceof CustomError)) {
-		throw new Error("err is not an instance of CustomError");
-	}
-
+}: augmentAndForwardErrorParams) => {
 	// Cast the error object to CustomError type
 	const customErr = err as CustomError;
 	// Set the function name property of the error
@@ -51,4 +44,4 @@ const handleCatchError = ({
 	next(customErr);
 };
 
-export default handleCatchError;
+export default augmentAndForwardError;

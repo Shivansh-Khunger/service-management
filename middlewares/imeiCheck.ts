@@ -2,11 +2,11 @@
 import type { RequestHandler } from "express";
 
 // Import necessary modules
-import { getUserImei } from "../helpers/userExists";
+import { getUserImei } from "../helpers/models/userExists";
 
 // Import the ResponsePayload utility
 import ResponsePayload from "../utils/resGenerator";
-import handleCatchError from "../utils/catchErrorHandler";
+import augmentAndForwardError from "../utils/errorAugmenter";
 
 // Middleware function to check for IMEI
 const checkForImei: RequestHandler = async (req, res, next) => {
@@ -64,8 +64,8 @@ const checkForImei: RequestHandler = async (req, res, next) => {
 		// If there were no issues, proceed to the next middleware function
 		next();
 	} catch (err) {
-		// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
 

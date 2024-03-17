@@ -4,7 +4,8 @@ import express from "express";
 // Import business controllers
 import * as businessControllers from "../../controllers/public/business/index";
 
-// Import validation middlewares
+// Import middlewares
+import checkForBusiness from "../../middlewares/businessCheck";
 import { validateBody, validateParams } from "../../middlewares/inputValidator";
 
 // Import error handling middleware
@@ -33,6 +34,13 @@ router.post(
 router.delete(
 	"/:businessId",
 	validateParams({ schema: businessSchemas.delBusiness }),
+	checkForBusiness({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "businessId",
+		passIfExists: true,
+		key: "_id",
+	}),
 	businessControllers.delBusiness,
 );
 
@@ -45,6 +53,13 @@ router.put(
 	validateBody({
 		schema: businessSchemas.updatedBusinessBody,
 		entity: "latestBusiness",
+	}),
+	checkForBusiness({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "businessId",
+		passIfExists: true,
+		key: "_id",
 	}),
 	businessControllers.updateBusiness,
 );

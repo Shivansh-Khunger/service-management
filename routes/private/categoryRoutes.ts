@@ -23,10 +23,16 @@ const router = express.Router();
 router.post(
 	"/new?key",
 	checkForApiKey,
-	checkForCategory({ checkIn: "body", entity: "categoryName" }),
 	validateBody({
 		schema: categorySchemas.newCategory,
 		entity: "categoryData",
+	}),
+	checkForCategory({
+		checkIn: "body",
+		bodyEntity: "categoryData",
+		entity: "categoryName",
+		passIfExists: false,
+		key: "name",
 	}),
 	catergoryControllers.newCategory,
 );
@@ -37,9 +43,15 @@ router.post(
 router.delete(
 	"/:categoryName?key",
 	checkForApiKey,
-	checkForCategory({ checkIn: "params", entity: "categoryName" }),
 	validateParams({ schema: categorySchemas.delCategory }),
 	catergoryControllers.delCategory,
+	checkForCategory({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "categoryName",
+		passIfExists: true,
+		key: "name",
+	}),
 );
 
 // Use the handleError middleware for error handling

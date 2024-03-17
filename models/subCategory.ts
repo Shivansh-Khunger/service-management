@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+type TSubCategory = {
+	name?: string;
+	subCategoryImage?: string;
+	description?: string;
+	categoryId: mongoose.Types.ObjectId;
+};
+
+export type T_idSubCategory = TSubCategory & {
+	_id: string | mongoose.ObjectId;
+};
+
 // Define the schema for a subcategory
 const subCategorySchema = new mongoose.Schema(
 	{
@@ -13,7 +24,7 @@ const subCategorySchema = new mongoose.Schema(
 			type: String,
 		},
 
-        // The description of the subcategory
+		// The description of the subcategory
 		description: {
 			type: String,
 		},
@@ -32,7 +43,10 @@ const subCategorySchema = new mongoose.Schema(
 );
 
 // Create the SubCategory model using the schema
-const subCategory = mongoose.model("SubCategory", subCategorySchema);
+const subCategory = mongoose.model<TSubCategory>(
+	"SubCategory",
+	subCategorySchema,
+);
 
 // Export the SubCategory model
 export default subCategory;

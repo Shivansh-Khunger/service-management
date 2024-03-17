@@ -4,7 +4,7 @@ import type { RequestHandler } from "express";
 // Importing necessary modules
 import business from "../../../models/business";
 
-import handleCatchError from "../../../utils/catchErrorHandler";
+import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // Function to update a business
@@ -52,6 +52,6 @@ export const updateBusiness: RequestHandler = async (req, res, next) => {
 
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };

@@ -1,14 +1,14 @@
-// Importing types
+// Import types
 import type { RequestHandler } from "express";
 
-// Importing necessary modules
+// Import necessary modules
 import user from "../../../models/user";
 
 import hashPassword from "../../../helpers/hashPassword";
-import { ifUserExistsByEmail } from "../../../helpers/userExists";
+import { ifUserExistsByEmail } from "../../../helpers/models/userExists";
 
-import handleCatchError from "../../../utils/catchErrorHandler";
-import generateReferal from "../../../utils/referalGenerator";
+import augmentAndForwardError from "../../../utils/errorAugmenter";
+import generateReferal from "../../../utils/referalGenerator.js";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // TODO -> think & implement auth soln.
@@ -97,8 +97,8 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
 		return res.status(409).json(resPayload);
 	} catch (err) {
-		// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };
 
@@ -150,6 +150,6 @@ export const delUser: RequestHandler = async (req, res, next) => {
 			res.status(401).json(resPayload);
 		}
 	} catch (err) {
-		handleCatchError({ next: next, err: err, funcName: funcName });
+		augmentAndForwardError({ next: next, err: err, funcName: funcName });
 	}
 };

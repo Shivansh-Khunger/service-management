@@ -1,5 +1,28 @@
 import mongoose from "mongoose";
 
+type TBusiness = {
+	name: string;
+	userId: mongoose.Types.ObjectId;
+	openingTime: Date;
+	closingTime: Date;
+	phoneNumber: string;
+	landLine?: string;
+	email: string;
+	website?: string;
+	imageUrls: string[];
+	geoLocation: number[];
+	upiId: string;
+	managerContact: {
+		managerPhoneNumber?: string;
+		managerEmail?: string;
+	};
+	Category: mongoose.Types.ObjectId;
+	subCategory: mongoose.Types.ObjectId;
+	brands: string[];
+};
+
+export type T_idBusiness = TBusiness & { _id: string | mongoose.ObjectId };
+
 const businessSchema = new mongoose.Schema(
 	{
 		name: {
@@ -65,14 +88,15 @@ const businessSchema = new mongoose.Schema(
 		// 	type: mongoose.Schema.Types.ObjectId,
 		// 	ref: "businessTypeMaster",
 		// },
-		// businessCategory: {
-		// 	type: mongoose.Schema.Types.ObjectId,
-		// 	ref: "categoryMaster",
-		// },
-		// businessSubCategory: {
-		// 	type: mongoose.Schema.Types.ObjectId,
-		// 	ref: "subCategoryMaster",
-		// },
+
+		category: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Category",
+		},
+		subCategory: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "SubCategory",
+		},
 
 		brands: {
 			type: [String],
@@ -85,5 +109,5 @@ const businessSchema = new mongoose.Schema(
 	},
 );
 
-const business = mongoose.model("Business", businessSchema);
+const business = mongoose.model<TBusiness>("Business", businessSchema);
 export default business;

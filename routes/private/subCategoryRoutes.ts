@@ -22,11 +22,17 @@ const router = express.Router();
 // The 'key' query parameter is used for API key authentication
 router.post(
 	"/new?key",
-	checkForApiKey, // Middleware to check the API key in the 'key' query parameter
-	checkForSubCategory({ checkIn: "body", entity: "subCategoryName" }), // Middleware to check if the subCategory already exists
+	checkForApiKey,
 	validateBody({
 		schema: subCatSchemas.newSubCategory,
 		entity: "subCategoryData",
+	}),
+	checkForSubCategory({
+		checkIn: "body",
+		bodyEntity: "subCategoryData",
+		entity: "subCategoryName",
+		passIfExists: false,
+		key: "name",
 	}),
 	subCatControllers.newSubCategory,
 );
@@ -36,10 +42,16 @@ router.post(
 // The 'key' query parameter is used for API key authentication
 router.delete(
 	"/:subCategoryName?key",
-	checkForApiKey, // Middleware to check the API key in the 'key' query parameter
-	checkForSubCategory({ checkIn: "params", entity: "subCategoryName" }), // Middleware to check if the subCategory exists
+	checkForApiKey,
 	validateParams({ schema: subCatSchemas.delSubCategory }),
 	subCatControllers.delSubCategory,
+	checkForSubCategory({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "subCategoryName",
+		passIfExists: true,
+		key: "name",
+	}),
 );
 
 // Use the handleError middleware for error handling

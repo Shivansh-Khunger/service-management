@@ -1,12 +1,17 @@
-import { v4 as uuidv4 } from "uuid";
+// Import the nanoid function from the nanoid module
+import { nanoid } from "nanoid";
 
-function generateReferal(tempUserFirstName: string) {
-	let referalCode = "";
-	const randomStr = uuidv4();
+// Define a function to generate a referral code
+function generateReferal(userName: string) {
+	// Generate a random string using the uuidv4 function
+	const randomStr = nanoid(13);
 
-	referalCode = `ijuju- ${tempUserFirstName} - ${randomStr}`;
+	// Construct the referral code by concatenating "ijuju-", the user's name, and the random string
+	const referalCode = `ijuju-${userName}-${randomStr}`;
 
+	// Return the referral code
 	return referalCode;
 }
 
+// Export the generateReferal function as the default export of this module
 export default generateReferal;

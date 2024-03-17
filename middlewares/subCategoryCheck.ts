@@ -1,46 +1,61 @@
 // Import types
 import type { NextFunction, Request, Response } from "express";
+import type mongoose from "mongoose";
+import type { T_idSubCategory } from "../models/subCategory";
 
 // Import necessary modules
-import {
-	ifSubCategoryExistsById,
-	ifSubCategoryExistsByName,
-} from "../helpers/subCategoryExists";
+import ifSubCategoryExists from "../helpers/models/subCategoryExists";
+import validateDocumentExistence from "./helpers/valDocExistence";
 
-import handleCatchError from "../utils/catchErrorHandler";
 import CustomError from "../utils/customError";
+import augmentAndForwardError from "../utils/errorAugmenter";
 
-interface SubCategoryCheckOptions {
-	checkIn: "body" | "query" | "params";
-	entity: string;
-}
+type SubCategoryCheckOptions =
+	| {
+			checkIn: "body";
+			bodyEntity: string;
+			entity: string;
+			passIfExists: boolean;
+			key: keyof T_idSubCategory;
+	  }
+	| {
+			checkIn: "query" | "params";
+			bodyEntity: undefined | null;
+			entity: string;
+			passIfExists: boolean;
+			key: keyof T_idSubCategory;
+	  };
 
 export const checkForSubCategory = ({
 	checkIn,
+	bodyEntity,
 	entity,
+	passIfExists,
+	key = "name",
 }: SubCategoryCheckOptions) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
+		const collectionName = "SubCategory";
 		const funcName = "checkForSubCategory";
 
-		let subCategoryAttr: string;
-		let subCategoryExists: boolean;
+		let valToKey: string;
+		let subCategoryExists: { _id: mongoose.Types.ObjectId } | null | undefined;
+
 		let errMessage = "";
 		try {
 			switch (checkIn) {
 				case "body":
-					subCategoryAttr = req.body.subCategoryData[entity];
+					valToKey = req.body[bodyEntity][entity];
+					subCategoryExists = await ifSubCategoryExists(next, {
+						[key]: valToKey,
+					});
 
-					subCategoryExists = await ifSubCategoryExistsByName(subCategoryAttr);
-
-					if (subCategoryExists) {
-						errMessage = `the request could not be completed because the sub-category-: ${subCategoryAttr} already exists.`;
-						const err = new CustomError(errMessage);
-						err.status = 400;
-
-						throw err;
-					}
-
-					next();
+					validateDocumentExistence({
+						nextFuncion: next,
+						docExists: subCategoryExists,
+						passIfExists: passIfExists,
+						collection: collectionName,
+						collectionAttr: valToKey,
+					});
 					break;
 
 				case "query":
@@ -48,33 +63,35 @@ export const checkForSubCategory = ({
 					break;
 
 				case "params":
-					subCategoryAttr = req.params[entity];
+					valToKey = req.params[entity];
+					subCategoryExists = await ifSubCategoryExists(next, {
+						[key]: valToKey,
+					});
 
-					subCategoryExists = await ifSubCategoryExistsById(subCategoryAttr);
-
-					if (!subCategoryExists) {
-						errMessage = `the request could not be completed because the sub-category-: ${subCategoryAttr} does not exist.`;
-						const err = new CustomError(errMessage);
-						err.status = 400;
-
-						throw err;
-					}
-
-					next();
+					validateDocumentExistence({
+						nextFuncion: next,
+						docExists: subCategoryExists,
+						passIfExists: passIfExists,
+						collection: collectionName,
+						collectionAttr: valToKey,
+					});
 					break;
 
 				default: {
-					const errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-
+					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
 					const err = new CustomError(errMessage);
-					err.status = 400;
 
 					throw err;
 				}
 			}
 		} catch (err) {
-			// Handle the caught error by passing it to the handleCatchError function which will pass it to the error handling middleware
-			handleCatchError({ next: next, err: err, funcName: funcName });
+			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
+			augmentAndForwardError({
+				next: next,
+				err: err,
+				funcName: funcName,
+				errStatus: 400,
+			});
 		}
 	};
 };

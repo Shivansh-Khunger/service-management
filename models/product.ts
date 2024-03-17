@@ -1,5 +1,44 @@
 import mongoose from "mongoose";
 
+type Quantity = {
+	no: number;
+	billNo?: number;
+	firmName?: string;
+	createdAt: Date;
+};
+
+type QuantityHistory = {
+	quantity: Quantity;
+	updatedAt?: Date;
+};
+
+type Attribute = {
+	name: string;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	value: any;
+};
+
+type TProduct = {
+	name: string;
+	brandName: string;
+	description?: string;
+	openingStock: number;
+	stockType: string;
+	quantity: Quantity;
+	quantityHistory?: QuantityHistory[];
+	batchNo?: string;
+	manufacturingDate?: Date;
+	expiryDate?: Date;
+	unitMrp: number;
+	images?: string[];
+	attributes?: Attribute[];
+	countryCode: string;
+	businessId: mongoose.Types.ObjectId;
+	userId: mongoose.Types.ObjectId;
+};
+
+export type T_idProduct = TProduct & { _id: string | mongoose.ObjectId };
+
 const productSchema = new mongoose.Schema(
 	{
 		// Product identification
@@ -60,14 +99,13 @@ const productSchema = new mongoose.Schema(
 			default: [],
 		},
 
-		// Product de tails
+		// Product details
 		batchNo: { type: String, default: null },
 		manufacturingDate: { type: Date, default: null },
 		expiryDate: { type: Date, default: null },
 
 		// Pricing
 		unitMrp: { type: Number, required: true },
-		sellingPrice: { type: Number, required: true },
 
 		// Images
 		images: { type: [String], default: [] },
@@ -103,5 +141,5 @@ const productSchema = new mongoose.Schema(
 	{ timestamp: true, autoIndex: true },
 );
 
-const product = mongoose.model("Product", productSchema);
-export default product;
+const Product = mongoose.model<TProduct>("Product", productSchema);
+export default Product;

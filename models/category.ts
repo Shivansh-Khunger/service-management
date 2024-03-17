@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+type TCategory = {
+	name: string;
+	image?: string;
+	description?: string;
+};
+
+export type T_idCategory = TCategory & { _id: string | mongoose.ObjectId };
+
 // Define the schema for a category
 const categorySchema = new mongoose.Schema(
 	{
@@ -24,7 +32,7 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Create the Category model using the schema
-const category = mongoose.model("Category", categorySchema);
+const category = mongoose.model<TCategory>("Category", categorySchema);
 
 // Export the Category model
 export default category;

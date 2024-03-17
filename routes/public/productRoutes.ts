@@ -4,7 +4,8 @@ import express from "express";
 // Import product controllers
 import * as productControllers from "../../controllers/public/product/index";
 
-// Import validation middlewares
+// Import middlewares
+import checkForProduct from "../../middlewares/productCheck";
 import { validateBody, validateParams } from "../../middlewares/inputValidator";
 
 // Import error handling middleware
@@ -32,6 +33,13 @@ router.post(
 router.delete(
 	"/:productId",
 	validateParams({ schema: productSchemas.delProduct }),
+	checkForProduct({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "productId",
+		passIfExists: true,
+		key: "_id",
+	}),
 	productControllers.delProduct,
 );
 
@@ -44,6 +52,13 @@ router.put(
 	validateBody({
 		schema: productSchemas.updateProductBody,
 		entity: "latestProduct",
+	}),
+	checkForProduct({
+		checkIn: "params",
+		bodyEntity: undefined,
+		entity: "productId",
+		passIfExists: true,
+		key: "_id",
 	}),
 	productControllers.updateProduct,
 );
