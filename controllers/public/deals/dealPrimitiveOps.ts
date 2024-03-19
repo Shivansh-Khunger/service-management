@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Import necessary modules
-import Deal from "../../../models/deals";
+import Deal from "../../../models/deal";
 
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
