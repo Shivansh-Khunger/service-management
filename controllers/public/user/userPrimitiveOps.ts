@@ -8,7 +8,7 @@ import hashPassword from "../../../helpers/hashPassword";
 import { ifUserExistsByEmail } from "../../../helpers/models/userExists";
 
 import augmentAndForwardError from "../../../utils/errorAugmenter";
-import generateReferal from "../../../utils/referalGenerator.js";
+import generateReferal from "../../../utils/referalGenerator";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // TODO -> think & implement auth soln.
