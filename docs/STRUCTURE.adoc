@@ -1,0 +1,132 @@
+= Project Directory Structure
+
+== Tree Diagram
+[source]
+----
+.
+├── .github/
+├── .vscode/
+├── config/
+├── controllers/
+│   ├── private/
+        ├── entity/
+│   └── public/
+        ├── entity/
+├── docs/
+├── helpers/
+│   ├── models/
+├── middlewares/
+    ├── helpers/
+├── models/
+├── routes/
+├── types/
+├── utils/
+├── validation/
+    ├── entity/
+├── .editorconfig
+├── .gitignore
+├── .prettierrc
+├── biome.json
+├── CONTRIBUTING.adoc
+├── index.ts
+├── LICENSE.adoc
+├── logger.ts
+├── package.json
+├── README.adoc
+└── tsconfig.json
+----
+
+
+== `.github/`
+This directory contains templates for issues and pull requests.
+
+== `.vscode/`
+This directory contains configuration and extension recommendation files for Visual Studio Code.
+
+== `config/`
+This directory contains configuration files for the project, such as `db.ts` for database configuration.
+
+[[controllers-section]]
+== `controllers/`
+This directory contains the logic for handling requests to the application. It's divided into `private/` and `public/` subdirectories.
+
+[[private-section]]
+=== `private/`
+This subdirectory contains controllers that require authentication and are intended to be accessed by either dev's or sister services of the project.
+
+[[public-section]]
+=== `public/`
+This subdirectory contains controllers that are intended to be accessed by the end user client.
+
+They each contain subdirectories for each entity / collection of the application, and each entity directory contains various controllers for the entity.
+
+== `docs/`
+This directory contains documentation files for the project.
+
+[[helpers-section]]
+== `helpers/`
+This directory contains helper functions that are used throughout the project.
+
+[[middlewares-section]]
+== `middlewares/`
+This directory contains middleware functions that process incoming requests before they reach the controllers.
+
+****
+Remember the philosophy that the controller should only implement the **business logic** and the middleware should handle the _request validation, authentication, etc_.
+****
+
+[[models-section]]
+== `models/`
+This directory contains the **`mongoose` schema** for each entity / collection for the project.
+
+== `routes/`
+This directory contains the route definitions for the application.
+
+TIP: This is also divided into `private/` and `public/` just like <<controllers-section>> subdirectories with each having the corresponding routes.
+
+== `types/`
+This directory contains custom type definitions for the project.
+
+[[utils-section]]
+== `utils/`
+This directory contains utility functions that are used throughout the project.
+
+[[difference-between-helpers-and-utils-section]]
+CAUTION: The difference between `helpers/` and `utils/` is that the `helpers/` are functions that are used in the business logic of the application, while the `utils/` are functions that are used in the infrastructure of the application.
+
+[[validation-section]]
+== `validation/`
+This directory contains sub-directory for each entity which includes input-validation schema files, made with **`JOI`**.
+
+TIP:
+The structure is similar to <<controllers-section>> except this is not divided into <<private-section>> and <<public-section>> subdirectories.
+
+== `dist/`
+This directory contains the compiled JavaScript files from the TypeScript source code.
+
+NOTE: This directory will be created after the project is built by you on your local machine.
+
+== `.gitignore`
+This file specifies the files and directories that Git should ignore.
+
+== `package.json`
+This file contains metadata about the project and its dependencies.
+
+== `tsconfig.json`
+This file contains configuration options for the TypeScript compiler.
+
+== `LICENSE.adoc`
+This file contains the license for the project.
+
+== `CONTRIBUTING.adoc`
+This file contains guidelines for contributing to the project.
+
+== `README.adoc`
+This file contains an overview of the project and instructions for setting up a development environment.
+
+== `index.ts`
+This is the entry point for the application.
+
+[[logger.ts-section]]
+== `logger.ts`
+This file contains the configuration for the application's logger which is xref:./DEPENDENCY.adoc#pino-section[pino].

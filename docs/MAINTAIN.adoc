@@ -1,0 +1,195 @@
+= How to Maintain 
+:toc: auto
+:toc-title: Jump to Section -:
+
+[[naming-conventions-section]]
+== Naming Conventions
+
+The following naming conventions should be followed when creating new files and directories:
+
+
+[cols="^.^,^.^,<.^", options="header"]
+|===
+| Entity | Naming Scheme | Example
+
+| directory / folder | camelCase | `myExampleDirectory`
+
+| file | camelCase | `myExampleFile.ts`
+
+| type / interface / class | PascalCase | `MyExampleClass` 
+
+OR
+
+`type MyExampleType = {}`
+
+| controller / function | camelCase |
+`myExampleFunction()` 
+
+OR
+
+ `const myExampleFunction = () => {}`
+
+| req.body[entity] | camelCase | `latestEntity` 
+
+OR
+
+`entityData`
+
+| req.params[entity] | camelCase | `entityId` 
+
+OR
+
+`entity[anyKey]`
+
+|===
+
+[[creating-new-files-section]]
+== Creating New Files
+
+TIP: Always try to look for an exisiting file of the same type or which servers similar purpose and use it as a template.
+
+=== **_New Entity Creation_**
+
+When creating a new **entity**, the following steps should be followed:
+
+1. Create a new file in the <<models-section>> directory for the entity.
+2. Create the `mongoose` schema for the entity in the new file.
+
+==== **Example**
+See the example entity schema in link:../models/category.ts[this file].
+
+=== **_New Controller Creation_**
+
+When creating a new **controller**, the following steps should be followed:
+
+NOTE: If the controller is intended to be accessed by the end user client, it should be created in the <<public-section>> subdirectory. Otherwise, it should be created in the <<private-section>> subdirectory.
+
+1. Create a new file in the <<controllers-section>> directory for the entity. 
+(create a new subdirectory if it doesn't exists for that particular entity) 
+
+2. Think about what middleware's / helper functions would be needed for the particular controller beforehand.
+
+3. Implement the required middleware's / helper functions if they don't exist.
+
+4. Create the controller function in the new file and implement business logic.
+
+5. Export the controller function from the file.
+
+NOTE: Export the function as default only when there is no other function to be exported from the file **type** exports can be **ignored** in that case `export default` can be used.
+
+==== **Example**
+
+===== **Private Controller**
+See the example primitive controllers in link:../controllers/private/category/categoryPrimitiveOps.ts[this file].
+
+===== **Public Controller**
+See the example get controller in link:../controllers/public/deal/getDeals.ts[this file].
+
+See the example primitive controllers in link:../controllers/public/product/productPrimitiveOps.ts[this file].
+
+=== **_New Middleware Creation_**
+
+When creating a new **middleware**, the following steps should be followed:
+
+1. Create a new file in the <<middlewares-section>> directory or appropiate sub-directory for the middleware.
+
+2. Create the middleware function in the new file and implement the required logic.
+
+3. Export the middleware function from the file.
+
+==== Example
+
+See the example middleware in link:../middlewares/businessCheck.ts[this file].
+
+==== **_New Helper Creation_**
+
+When creating a new **helper** function, the following steps should be followed:
+
+1. Create a new file in the <<helpers-section>> directory or appropiate sub-directory for the helper function.
+
+2. Create the helper function in the new file and implement the required logic.
+
+3. Export the helper function from the file.
+
+==== **Example**
+
+See the example helper function that was specifically made for an entity in link:../helpers/models/businessExists.ts[this file].
+
+See the example helper function in link:../helpers/hashPassword.ts[this file].
+
+=== **_New Utility Creation_**
+
+NOTE: Utility functions are functions that are used in the infrastructure of the application.
+For more detailed comparison between `helpers` and `utils` link:../#difference-between-helpers-and-utils-section[have a look].
+
+When creating a new **utility** function, the following steps should be followed:
+
+1. Create a new file in the <<utils-section>> directory or appropiate sub-directory for the utility function.
+
+2. Create the utility function in the new file and implement the required logic.
+
+3. Export the utility function from the file.
+
+==== **Example**
+
+See the example utility function in link:../utils/errorAugmenter.ts[this file].
+
+TIP: Explore the whole link:../utils/[directory] as each utility function is unique and can be used in different places.
+
+=== **_New Validation Schema Creation_**
+
+When creating a new **validation schema**, the following steps should be followed:
+
+NOTE: The validation schema is made with **`JOI`**.
+
+IMPORTANT: The validation schema should be created in the same directory as the entity it is validating also follow the same structure & naming scheme as <<controllers-section>> directory.
+
+1. Create a new file in the <<validation-section>> directory or appropiate sub-directory for the validation schema.
+
+2. Create the validation schema in the new file and implement the required logic.
+
+3. Export the validation schema from the file.
+
+4. Add the export into the directory's `index.ts` file. (if the file isn't included already)
+
+5. **Optional:** Create `index.ts` file in the entity directory and export all the validation schema(s) from there. (if there wasn't already one)
+
+==== **Example**
+
+See the example validation schema in link:../validation/product/primitiveOps.ts[this file].
+
+See the example `index.ts` file in link:../validation/product/index.ts[this file].
+
+=== **_New Route Creation_**
+
+When creating a new **route**, the following steps should be followed:
+
+1. Create a new file in the <<routes-section>> directory or appropiate sub-directory for the route.
+
+2. Import validation schema(s) if needed.
+
+3. Import the controller function(s) if needed.
+
+4. Import middleware function(s) if needed.
+
+5. Implement the route with all its input-validation, middleware & controller.
+
+NOTE: The Router will automatically export your newly created route. If no router is there in that case create a new one by following the sister route files.
+
+NOTE: All Routes have a version prefix which is implemented in the link:./index.ts[entry point] of the application.
+
+
+==== **Example**
+
+See the example of a **public** route in link:../routes/public/productRoutes.ts[this file].
+
+See the example of a **private** route in link:../routes/private/categoryRoutes.ts[this file].
+
+=== **_New Test Creation_**
+
+This part is currently under wraps.
+
+Sorry for the inconvenience. (˘･_･˘)
+
+TIP: In the mean time try to look for an exisiting test file of the same type or which servers similar purpose and use it as a template.
+

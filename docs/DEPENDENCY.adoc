@@ -1,0 +1,76 @@
+= Project Dependencies
+:structure: ./STRUCTURE.adoc
+
+This document provides a brief description of each dependency in the `package.json` file.
+
+== Dependencies
+
+=== `@dotenvx/dotenvx`
+This package is used to load environment variables from a `.env` file into `process.env`.
+
+=== `bcrypt`
+This package is used for hashing passwords.
+
+==== User For 
+This package is used in `helpers/hashPassword`.
+
+=== `express`
+This package is a fast, unopinionated, and minimalist web framework for Node.js.
+
+=== `joi`
+This package is used for input-validation.
+
+==== User For
+`JOI` Schema's are defined in dir xref:{structure}#validation-section[`validation/`].
+
+=== `mongoose`
+This package is a MongoDB object modeling tool designed to work in an asynchronous environment.
+
+==== User For
+`Mongoose` Schema's for each entity / collection is defined in dir xref:{structure}#models-section[`models/`].
+
+=== `nanoid`
+This package is a tiny, secure, URL-friendly, unique string ID generator for JavaScript.
+
+==== User For 
+This package is used to generate referals in the project.
+
+=== `nodemon`
+This package is a utility that will monitor for any changes in your source and automatically restart your server.
+
+[[pino-section]]
+=== `pino`
+This package is a very low overhead Node.js logger.
+
+=== `pino-http`
+This package provides standard HTTP logging for Pino.
+
+=== `pino-pretty`
+This package is a pretty printer for Pino logs.
+
+****
+`pino`, `pino-http`, `pino-pretty` collectively are used for logging in the project. They are implemented in the xref:{structure}#logger.ts-section[`logger.ts`] at the root of the project.
+****
+
+=== `typescript`
+This package is a typed superset of JavaScript that compiles to plain JavaScript.
+
+=== `ua-parser-js`
+This package is a user-agent string parser.
+
+== Dev Dependencies
+
+=== `@biomejs/biome`
+This package is a lightweight, flexible, and scalable Node.js server framework.
+
+=== `@types/bcrypt`
+This package provides TypeScript definitions for `bcrypt`.
+
+=== `@types/express`
+This package provides TypeScript definitions for `express`.
+
+=== `@types/node`
+This package provides TypeScript definitions for Node.js.
+
+=== `@types/ua-parser-js`
+This package provides TypeScript definitions for `ua-parser-js`.
