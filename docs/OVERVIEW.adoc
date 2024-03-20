@@ -1,0 +1,15 @@
+= Project Overview
+:toc: auto
+:toc-title: Jump to Section -:
+
+== Introduction
+This document provides an overview of the project. For more detailed information, please refer to the specific documents linked below.
+
+== Directory Structure
+For a detailed explanation of the project's directory structure, see link:./STRUCTURE.adoc[Project Directory Structure].
+
+== Maintenance Guidelines
+For guidelines on maintaining the project, including naming conventions and how to create new files, see link:./MAINTAIN.adoc[Maintenance Guidelines].
+
+== Dependencies
+For a brief description of each dependency in the `package.json` file, see link:./DEPENDENCY.adoc[Project Dependencies].

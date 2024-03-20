@@ -1,0 +1,75 @@
+= Hey there, awesome human!
+
+First off, big high-five for thinking about chipping in. It's cool folks like you that help make this tool even better.
+
+== So, how can you lend a hand?
+
+=== Spotted a bug? Let us know!
+
+If you've found a pesky bug, please raise a new issue in our GitHub repository. Make sure to include a clear title and description, as much relevant info as you can, and a code sample or an executable test case demonstrating the expected behavior that's not happening.
+
+=== Got a cool idea?
+
+If you've got a brilliant idea for a new feature or an improvement to an existing one, please raise a new issue in our GitHub repository. Make sure to include a clear title and description, as much relevant info as you can, and a step-by-step description of the suggested enhancement in as many details as possible.
+
+=== Ready to roll up your sleeves?
+
+If you're not sure where to start, look for issues labeled `good first issue` or `help wanted`. These are issues that have been specifically marked as being friendly to new folks.
+
+NOTE: GitHub allows the repository maintainers to create templates for issues and pull requests. These templates provide a guide for contributors to follow, which can simplify the process of submitting issues and pull requests.
+
+TIP: When you create a new issue or pull request, GitHub will automatically populate the description with the content of the appropriate template and instructions for the title. You should fill in the template with the relevant information.
+
+=== Pull Requests
+
+1. Fork the repo and create your branch from `main`.
+2. If you've added code that should be tested, add tests.
+3. If you've changed APIs, update the documentation.
+4. Ensure the test suite passes.
+5. Make sure your code lints.
+6. Issue that pull request!
+
+=== Issue 
+
+* Ensure the issue is not already reported.
+* Use a clear and descriptive title for the issue to identify the problem.
+* Describe the exact steps which reproduce the problem in as many details as possible.
+* Provide specific examples to demonstrate the steps.
+
+== Styleguides
+
+=== Git Commit Messages
+
+* Use lowercase for all commit messages
+* Use the present tense ("Add feature" not "Added feature")
+* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+* Limit the first line to 72 characters or less
+* Reference issues and pull requests liberally after the first line
+
+=== TypeScript Styleguide
+
+All TypeScript must adhere to the [TypeScript standard](https://www.typescriptlang.org/docs/handbook/intro.html). 
+This is enforced with the `.editorconfig`, `.prettierrc` and `biome.json` files in the repository.
+
+== Issue and Pull Request Labels
+
+This section lists the labels we use to help us track and manage issues and pull requests.
+
+* `bug` - Issues or PRs related to bugs.
+* `documentation` - Issues or PRs related to documentation.
+* `duplicate` - Issues or PRs that are duplicates of other issues or PRs.
+* `enhancement` - Issues or PRs related to enhancements or feature requests.
+* `good first issue` - Good for newcomers.
+* `help wanted` - Extra attention is needed.
+* `invalid` - This doesn't seem right.
+* `question` - Further information is requested.
+* `wontfix` - This will not be worked on.
+
+
+== Ready to Dive In?
+
+Great! Understanding the project is your first step towards contributing. We've prepared an overview to help you get started.
+
+Take a moment to read through our link:./docs/OVERVIEW.adoc[Project Overview]. It provides a high-level explanation of the project's structure and key components. 
+
+Once you're familiar with the overview, you'll be better equipped to make meaningful contributions. We're excited to see what you'll bring to the project!
