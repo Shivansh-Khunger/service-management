@@ -1,5 +1,5 @@
 // Import types
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type Joi from "joi";
 
 import CustomError from "../utils/customError";
@@ -27,13 +27,13 @@ function handleValidationError(
 }
 
 // Interface for params of validateBody function
-interface validateBodyParams {
+export type validateBodyOptions = {
 	schema: Joi.ObjectSchema;
-	entity: string;
-}
+	entity?: string;
+};
 
 // Function to validate the request body
-export const validateBody = ({ schema, entity }: validateBodyParams) => {
+export const validateBody = ({ schema, entity }: validateBodyOptions) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		// Initialize a variable to hold any schema validation errors
 
@@ -49,6 +49,7 @@ export const validateBody = ({ schema, entity }: validateBodyParams) => {
 		// If there are any schema validation errors
 		if (error) {
 			handleValidationError(error, req, next);
+			return;
 		}
 
 		// If there are no schema validation errors, proceed to the next middleware function
@@ -57,12 +58,12 @@ export const validateBody = ({ schema, entity }: validateBodyParams) => {
 };
 
 // Interface for params of validateParams function
-interface validateParamsInput {
+export type validateParamsOptions = {
 	schema: Joi.ObjectSchema;
-}
+};
 
 // Function to validate the request parameters
-export const validateParams = ({ schema }: validateParamsInput) => {
+export const validateParams = ({ schema }: validateParamsOptions) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		// Validate the request parameters against the provided schema
 		const { error } = schema.validate(req.params);
@@ -70,6 +71,7 @@ export const validateParams = ({ schema }: validateParamsInput) => {
 		// If there are any schema validation errors
 		if (error) {
 			handleValidationError(error, req, next);
+			return;
 		}
 
 		// If there are no schema validation errors, proceed to the next middleware function
