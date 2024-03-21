@@ -10,7 +10,7 @@ import validateDocumentExistence from "./helpers/valDocExistence";
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type CategoryCheckOptions =
+export type CategoryCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
@@ -51,7 +51,7 @@ export const checkForCategory = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: categoryExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -72,7 +72,7 @@ export const checkForCategory = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: categoryExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -80,13 +80,6 @@ export const checkForCategory = ({
 					});
 
 					break;
-
-				default: {
-					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-					const err = new CustomError(errMessage);
-
-					throw err;
-				}
 			}
 		} catch (err) {
 			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware

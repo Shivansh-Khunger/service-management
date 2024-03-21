@@ -10,7 +10,7 @@ import validateDocumentExistence from "./helpers/valDocExistence";
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type SubCategoryCheckOptions =
+export type SubCategoryCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
@@ -40,7 +40,7 @@ export const checkForSubCategory = ({
 		let valToKey: string;
 		let subCategoryExists: { _id: mongoose.Types.ObjectId } | null | undefined;
 
-		let errMessage = "";
+		let errMessage: string;
 		try {
 			switch (checkIn) {
 				case "body":
@@ -50,7 +50,7 @@ export const checkForSubCategory = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: subCategoryExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -69,20 +69,13 @@ export const checkForSubCategory = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: subCategoryExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
 					break;
-
-				default: {
-					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-					const err = new CustomError(errMessage);
-
-					throw err;
-				}
 			}
 		} catch (err) {
 			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware
