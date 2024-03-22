@@ -9,7 +9,7 @@ import { logger } from "../../../logger";
 import CustomError from "../../../utils/customError";
 
 const funcName = "handleError";
-describe("", () => {
+describe(`middleware -> ${funcName} tests`, () => {
 	let mockRequest: Partial<Request>;
 	let mockResponse: Partial<Response>;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -19,7 +19,9 @@ describe("", () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
 
+	beforeEach(() => {
 		mockResponse = {
 			status: jest.fn().mockImplementation((statusCode) => {
 				mockResponse.status = statusCode;
@@ -37,7 +39,7 @@ describe("", () => {
 		mockError = {};
 	});
 
-	test("x", () => {
+	test("if Sends response with input values when given", () => {
 		mockError = new CustomError("error message");
 		mockError.status = 401;
 		mockError.logMessage = "error log message";
@@ -59,7 +61,7 @@ describe("", () => {
 		expect(mockNextFunction).not.toHaveBeenCalled();
 	});
 
-	test("y", () => {
+	test("if Sends default response when input not given", () => {
 		handleError(
 			mockError,
 			mockRequest as Request,

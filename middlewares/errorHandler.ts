@@ -1,10 +1,11 @@
+// Import types
 import type { ErrorRequestHandler } from "express";
 
 // Import the ResponsePayload utility
 import ResponsePayload from "../utils/resGenerator";
 
 // Define a middleware function to handle errors
-const handleError: ErrorRequestHandler = async (err, req, res, next) => {
+const handleError: ErrorRequestHandler = (err, req, res, next) => {
 	// Create a new ResponsePayload instance
 	const resPayload = new ResponsePayload();
 
@@ -24,11 +25,9 @@ const handleError: ErrorRequestHandler = async (err, req, res, next) => {
 
 	// Log the error with the log message
 	res.log.error(err, logMessage);
-	// Send the response with the status and the response payload
-	res.status(status).json(resPayload);
 
-	// Proceed to the next middleware function
-	next();
+	// Send the response with the status and the response payload
+	return res.status(status).json(resPayload);
 };
 
 // Export the middleware function
