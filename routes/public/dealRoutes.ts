@@ -63,10 +63,12 @@ router.delete(
 router.get(
 	"/:userId",
 	validateParams({ schema: dealSchemas.getDealsParams }),
-	validateBody({ schema: dealSchemas.getDealsParams, entity: "userData" }),
+	validateBody({ schema: dealSchemas.getDealsBody, entity: "userData" }),
 	dealControllers.getDeals,
 );
 
 // Use the handleError middleware for error handling
 // This middleware function will be invoked for any errors that occur in the route handlers
 router.use(handleError);
+
+export default router;

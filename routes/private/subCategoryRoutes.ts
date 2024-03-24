@@ -21,7 +21,7 @@ const router = express.Router();
 // The 'subCategoryData' entity in the request body is specifically validated
 // The 'key' query parameter is used for API key authentication
 router.post(
-	"/new?key",
+	"/new",
 	checkForApiKey,
 	validateBody({
 		schema: subCatSchemas.newSubCategory,
@@ -41,7 +41,7 @@ router.post(
 // The route parameters are validated against the delSubCategorySchema
 // The 'key' query parameter is used for API key authentication
 router.delete(
-	"/:subCategoryName?key",
+	"/:subCategoryName",
 	checkForApiKey,
 	validateParams({ schema: subCatSchemas.delSubCategory }),
 	subCatControllers.delSubCategory,
