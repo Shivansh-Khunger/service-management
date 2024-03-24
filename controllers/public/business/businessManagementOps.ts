@@ -7,6 +7,7 @@ import business from "../../../models/business";
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
+const collectionName = "Business";
 // Function to update a business
 export const updateBusiness: RequestHandler = async (req, res, next) => {
 	const funcName = "updateBusiness";
@@ -29,10 +30,11 @@ export const updateBusiness: RequestHandler = async (req, res, next) => {
 
 		let resMessage: string;
 		const resLogMessage = `-> response for ${funcName} controller`;
+
 		// If the business was successfully updated
 		if (updatedBusiness) {
 			// Create a success message
-			resMessage = `business with id-: ${req.params.businessId} has been updated.`;
+			resMessage = `request to update ${collectionName}-: ${req.params.businessId} is successfull.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, updatedBusiness);
@@ -44,7 +46,7 @@ export const updateBusiness: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the product could not be updated, create a conflict message
-		resMessage = `business with id-: ${req.params.businessId} could not be updated.`;
+		resMessage = `request to update ${collectionName}-: ${req.params.businessId} is unsuccessfull.`;
 
 		resPayload.setConflict(resMessage);
 

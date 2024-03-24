@@ -7,6 +7,7 @@ import product from "../../../models/product";
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
+const collectionName = "Product";
 // Function to update a product
 export const updateProduct: RequestHandler = async (req, res, next) => {
 	const funcName = "updateProduct";
@@ -32,7 +33,7 @@ export const updateProduct: RequestHandler = async (req, res, next) => {
 		// If the product was successfully updated
 		if (updatedProduct) {
 			// Create a success message
-			resMessage = `product with id-: ${productId} is updated.`;
+			resMessage = `Request to update ${collectionName}-: ${productId} is successfull.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, updatedProduct);
@@ -44,7 +45,7 @@ export const updateProduct: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the product could not be updated, create a conflict message
-		resMessage = `product with id-: ${productId} is not updated.`;
+		resMessage = `Request to update ${collectionName}-: ${productId} is unsuccessfull.`;
 
 		resPayload.setConflict(resMessage);
 

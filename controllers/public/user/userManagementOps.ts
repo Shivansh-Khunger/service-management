@@ -7,6 +7,7 @@ import user from "../../../models/user";
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
+const collectionName = "User";
 export const updateUser: RequestHandler = async (req, res, next) => {
 	const funcName = "updateUser";
 
@@ -30,7 +31,7 @@ export const updateUser: RequestHandler = async (req, res, next) => {
 		// If the user was successfully updated
 		if (updatedUser) {
 			// Create a success message
-			resMessage = `request to updated user-: ${userId} is successfull.`;
+			resMessage = `Request to update ${collectionName}-: ${userId} is successfull.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, updatedUser);
@@ -42,7 +43,7 @@ export const updateUser: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the user could not be updated, create a conflict message
-		resMessage = `request to updated user-: ${userId} is not successfull.`;
+		resMessage = `Request to update ${collectionName}-: ${userId} is unsuccessfull.`;
 
 		resPayload.setConflict(resMessage);
 

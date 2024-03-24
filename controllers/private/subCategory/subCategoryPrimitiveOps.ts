@@ -7,6 +7,7 @@ import subCategory from "../../../models/subCategory";
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
+const collectionName = "SubCategory";
 // Function to create a new subcategory
 export const newSubCategory: RequestHandler = async (req, res, next) => {
 	// Define the function name for error handling
@@ -24,16 +25,11 @@ export const newSubCategory: RequestHandler = async (req, res, next) => {
 		const resLogMessage = `-> response payload for ${funcName} controller`;
 
 		// Create a new subcategory
-		const newSubCategory = await subCategory.create({
-			name: subCategoryData.name,
-			image: subCategoryData.image,
-			description: subCategoryData.description,
-			categoryId: subCategoryData.categoryId,
-		});
+		const newSubCategory = await subCategory.create({ ...subCategoryData });
 
 		if (newSubCategory) {
 			// If the subcategory was created successfully, set the success message
-			resMessage = `the request to create a subCategory with name-: ${subCategoryData.name} is successfull.`;
+			resMessage = `Request to create ${collectionName}-: ${subCategoryData.name} is successfull.`;
 
 			// Set the response payload to success
 			resPayload.setSuccess(resMessage, newSubCategory);
@@ -42,10 +38,10 @@ export const newSubCategory: RequestHandler = async (req, res, next) => {
 			res.log.info(resPayload, resLogMessage);
 
 			// Send the response payload
-			return res.status(200).json(resPayload);
+			return res.status(201).json(resPayload);
 		}
 		// If the subcategory was not created successfully, set the conflict message
-		resMessage = `the request to create a subCategory with name-: ${subCategoryData.name} is not successfull.`;
+		resMessage = `Request to create ${collectionName}-: ${subCategoryData.name} is unsuccessfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);
@@ -82,12 +78,12 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 			name: subCategoryName,
 		});
 
-		if (deletedSubCategory) {
+		if (deletedSubCategory?.name === subCategoryName) {
 			// If the subcategory was deleted successfully, set the success message
-			resMessage = `the request to delete a subCategory with id-: ${subCategoryName} & name-: ${deletedSubCategory._id} is successfull.`;
+			resMessage = `Request to delete ${collectionName}-: ${subCategoryName} is successfull.`;
 
 			// Set the response payload to success
-			resPayload.setSuccess(resMessage, deletedSubCategory);
+			resPayload.setSuccess(resMessage);
 
 			// Log the response payload
 			res.log.info(resPayload, resLogMessage);
@@ -96,7 +92,7 @@ export const delSubCategory: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the subcategory was not deleted successfully, set the conflict message
-		resMessage = `the request to delete a subCategory with name-: ${subCategoryName} is not successfull.`;
+		resMessage = `Request to delete ${collectionName}-: ${subCategoryName} is unsuccessfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);

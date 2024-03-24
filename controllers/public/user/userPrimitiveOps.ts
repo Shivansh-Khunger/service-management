@@ -55,19 +55,9 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
 			// Attempt to create a new user with the provided data
 			const newUser = await user.create({
-				name: userData.name,
-				email: userData.email,
-				phoneNumber: userData.phoneNumber,
+				...userData,
 				password: hashedPassword,
 				referalCode: referalCode,
-				countryCode: userData.countryCode,
-				pushToken: userData.pushToken,
-				profilePic: userData.profilePic,
-				imeiNumber: userData.imeiNumber,
-				geoLocation: [
-					userData.geoLocation.longi || 0,
-					userData.geoLocation.lati || 0,
-				],
 			});
 
 			// If the user was created successfully, send a success response
