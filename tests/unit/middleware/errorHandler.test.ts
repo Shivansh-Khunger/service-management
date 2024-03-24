@@ -52,6 +52,7 @@ describe(`middleware -> ${funcName} tests`, () => {
 			mockNextFunction,
 		);
 
+		expect(mockResponse.status).toBe(401);
 		expect(mockResponse.json).toStrictEqual({
 			data: null,
 			isSuccess: false,
@@ -69,6 +70,7 @@ describe(`middleware -> ${funcName} tests`, () => {
 			mockNextFunction,
 		);
 
+		expect(mockResponse.status).toBe(500);
 		expect(mockResponse.json).toStrictEqual({
 			data: null,
 			isSuccess: false,
