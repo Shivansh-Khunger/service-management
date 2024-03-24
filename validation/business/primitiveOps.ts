@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 // Export & initialize UPI id regex
-export const UPI_ID_REGEX = /^[w.-_]{3,}@[a-zA-Z]{3,}/;
+export const UPI_ID_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+$/;
 
 export const newBusiness = Joi.object({
 	name: Joi.string().required(),
@@ -15,7 +15,10 @@ export const newBusiness = Joi.object({
 	email: Joi.string().email().required(),
 	website: Joi.string().uri(),
 	imageUrls: Joi.array().items(Joi.string().uri()),
-	geoLocation: Joi.array().items(Joi.number()).length(2).required(),
+	geoLocation: Joi.object({
+		type: Joi.string().valid("Point").default("Point"),
+		coordinates: Joi.array().items(Joi.number()).length(2),
+	}).required(),
 	upiId: Joi.string().pattern(UPI_ID_REGEX).required(),
 
 	managerPhoneNumber: Joi.string(),

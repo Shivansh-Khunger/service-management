@@ -28,7 +28,10 @@ export const updatedBusinessBody = Joi.object({
 	imageUrls: Joi.array().items(Joi.string().uri()),
 
 	// Location and payment details
-	geoLocation: Joi.array().items(Joi.number()).length(2),
+	geoLocation: Joi.object({
+		type: Joi.string().valid("Point").default("Point"),
+		coordinates: Joi.array().items(Joi.number()).length(2),
+	}),
 	upiId: Joi.string().pattern(UPI_ID_REGEX),
 
 	// Manager contact details

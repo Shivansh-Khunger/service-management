@@ -1,11 +1,9 @@
 import Joi from "joi";
 
-export const USER_NAME_REGEX = new RegExp(
-	/(^[a-zA-Z][a-zA-Zs]{0,20}[a-zA-Z]$)/,
-);
+export const USER_NAME_REGEX = /^[a-zA-Z][a-zA-Zs]{0,20}[a-zA-Z]$/;
 
 export const USER_PASS_REGEX =
-	/^(?:(?=.*?p{N})(?=.*?[p{S}p{P} ])(?=.*?p{Lu})(?=.*?p{Ll}))[^p{C}]{8,16}$/;
+    /^(?=.*?[0-9])(?=.*?[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ])(?=.*?[A-Z])(?=.*?[a-z]).{8,16}$/;
 
 // User Information
 const userInfo = {
