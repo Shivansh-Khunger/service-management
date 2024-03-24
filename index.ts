@@ -12,6 +12,7 @@ import subCategoryRoutes from "./routes/private/subCategoryRoutes";
 import businessRoutes from "./routes/public/businessRoutes";
 import productRoutes from "./routes/public/productRoutes";
 import userRoutes from "./routes/public/userRoutes";
+import dealRoutes from "./routes/public/dealRoutes";
 
 // Define the port on which the server will run
 const PORT = process.env.PORT || 3001;
@@ -46,7 +47,7 @@ app.use(httpLogger);
 
 // Define a route for the base URL that sends a welcome message
 app.get("/", (req, res) => {
-	res.send("Welcome to service-management of IJUJU.");
+	res.status(200).send("Welcome to API of IJUJU.");
 });
 
 // Define the version number for the API
@@ -57,5 +58,6 @@ const versionNumber = "v1";
 app.use(`/${versionNumber}/u`, userRoutes);
 app.use(`/${versionNumber}/b`, businessRoutes);
 app.use(`/${versionNumber}/p`, productRoutes);
+app.use(`/${versionNumber}/d`, dealRoutes);
 app.use(`/${versionNumber}/c`, categoryRoutes);
 app.use(`/${versionNumber}/sc`, subCategoryRoutes);
