@@ -10,7 +10,10 @@ type TBusiness = {
 	email: string;
 	website?: string;
 	imageUrls: string[];
-	geoLocation: number[];
+	geoLocation: {
+		type: string;
+		coordinates: [number, number];
+	};
 	upiId: string;
 	managerContact: {
 		managerPhoneNumber?: string;
@@ -65,9 +68,14 @@ const businessSchema = new mongoose.Schema(
 			default: [],
 		},
 		geoLocation: {
-			type: [Number],
-			index: "2d", // 0 index long, 1 index lat
-			required: true,
+			type: {
+				type: String,
+				default: "Point",
+			},
+			coordinates: {
+				type: [Number],
+				index: "2dsphere",
+			},
 		},
 		upiId: { type: String, required: true },
 

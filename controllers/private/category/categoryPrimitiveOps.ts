@@ -4,10 +4,10 @@ import type { RequestHandler } from "express";
 // Import the necessary modules
 import category from "../../../models/category";
 import subCategory from "../../../models/subCategory";
-
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
 
+const collectionName = "Category";
 // Function to create a new category
 export const newCategory: RequestHandler = async (req, res, next) => {
 	// Define the function name for error handling
@@ -25,15 +25,11 @@ export const newCategory: RequestHandler = async (req, res, next) => {
 		const resLogMessage = `-> response payload for ${funcName} controller`;
 
 		// Create a new category
-		const newCategory = await category.create({
-			name: categoryData.name,
-			image: categoryData.image,
-			description: categoryData.description,
-		});
+		const newCategory = await category.create({ ...categoryData });
 
 		if (newCategory) {
 			// If the category was created successfully, set the success message
-			resMessage = `the request to create a user with name-: ${categoryData.name} is successfull.`;
+			resMessage = `Request to create ${collectionName}-: ${categoryData.name} is successfull.`;
 
 			// Set the response payload to success
 			resPayload.setSuccess(resMessage, newCategory);
@@ -42,10 +38,10 @@ export const newCategory: RequestHandler = async (req, res, next) => {
 			res.log.info(resPayload, resLogMessage);
 
 			// Send the response payload
-			return res.status(200).json(resPayload);
+			return res.status(201).json(resPayload);
 		}
 		// If the category was not created successfully, set the conflict message
-		resMessage = `the request to create a user with name-: ${categoryData.name} is not successfull.`;
+		resMessage = `Request to create ${collectionName}-: ${categoryData.name} is unsuccessfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);
@@ -88,19 +84,15 @@ export const delCategory: RequestHandler = async (req, res, next) => {
 				categoryId: deletedCategory?._id,
 			})
 			.catch((err) => {
-				// Add the function name to the error object for debugging
-				err.funcName = funcName;
-
-				// Pass the error to the next middleware
-				next(err);
+				throw err;
 			});
 
 		if (deletedCategory?.name === categoryName) {
 			// If the category was deleted successfully, set the success message
-			resMessage = `the request to delete a category with id-: ${deletedCategory?._id} and name -: ${categoryName} is successfull.`;
+			resMessage = `Request to delete ${collectionName}-: ${categoryName} is successfull.`;
 
 			// Set the response payload to success
-			resPayload.setSuccess(resMessage, deletedCategory);
+			resPayload.setSuccess(resMessage);
 
 			// Log the response payload
 			res.log.info(resPayload, resLogMessage);
@@ -109,7 +101,7 @@ export const delCategory: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the category was not deleted successfully, set the conflict message
-		resMessage = `the request to delete a category with name-: ${categoryName} is not successfull.`;
+		resMessage = `Request to delete ${collectionName}-: ${categoryName} is unsuccessfull.`;
 
 		// Set the response payload to conflict
 		resPayload.setConflict(resMessage);

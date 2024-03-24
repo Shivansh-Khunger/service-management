@@ -10,7 +10,7 @@ import validateDocumentExistence from "./helpers/valDocExistence";
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type BusinessCheckOptions =
+export type BusinessCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
@@ -52,7 +52,7 @@ const checkForBusiness = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: businessExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -72,7 +72,7 @@ const checkForBusiness = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: businessExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -81,12 +81,12 @@ const checkForBusiness = ({
 
 					break;
 
-				default: {
-					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-					const err = new CustomError(errMessage);
+				// default: {
+				// 	errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
+				// 	const err = new CustomError(errMessage);
 
-					throw err;
-				}
+				// 	throw err;
+				// }
 			}
 		} catch (err) {
 			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware

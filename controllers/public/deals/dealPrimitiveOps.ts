@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Import necessary modules
-import Deal from "../../../models/deals";
+import Deal from "../../../models/deal";
 
 import augmentAndForwardError from "../../../utils/errorAugmenter";
 import ResponsePayload from "../../../utils/resGenerator";
@@ -23,7 +23,7 @@ export const newDeal: RequestHandler = async (req, res, next) => {
 
 		if (newDeal) {
 			// Create a success message
-			resMessage = `request to create deal-: ${newDeal.name} by user -:${newDeal.userId} is successfull.`;
+			resMessage = `Request to create deal-: ${newDeal.name} by user -:${newDeal.userId} is successfull.`;
 
 			// Set the success response payload
 			resPayload.setSuccess(resMessage, newDeal);
@@ -34,7 +34,7 @@ export const newDeal: RequestHandler = async (req, res, next) => {
 			// Return the response payload with status 201
 			return res.status(201).json(resPayload);
 		}
-		resMessage = `request to create deal-: ${dealData.name} is not successfull.`;
+		resMessage = `Request to create deal-: ${dealData.name} is unsuccessfull.`;
 
 		resPayload.setConflict(resMessage);
 
@@ -74,7 +74,7 @@ export const delDeal: RequestHandler = async (req, res, next) => {
 			return res.status(200).json(resPayload);
 		}
 		// If the deal was not deleted
-		const resMessage = `Request to delete deal-: ${dealId} is not successfull.`;
+		const resMessage = `Request to delete deal-: ${dealId} is unsuccessfull.`;
 
 		// Set the conflict response payload
 		resPayload.setConflict(resMessage);

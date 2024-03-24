@@ -2,13 +2,13 @@ class ResponsePayload {
 	isSuccess: boolean;
 	hasError: boolean;
 	message: string;
-	data: unknown;
+	data?: undefined | null | unknown;
 
 	constructor() {
 		this.isSuccess = false;
 		this.hasError = false;
 		this.message = "";
-		this.data = null;
+		this.data = null ;
 	}
 
 	setSuccess(message: string, data?: unknown) {

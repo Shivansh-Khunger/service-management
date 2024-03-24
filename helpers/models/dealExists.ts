@@ -1,9 +1,9 @@
 // Import types
 import type { NextFunction } from "express";
-import type { T_idDeal } from "../../models/deals";
+import type { T_idDeal } from "../../models/deal";
 
 // Import necessary modules
-import deals from "../../models/deals";
+import deals from "../../models/deal";
 
 import augmentAndForwardError from "../../utils/errorAugmenter";
 

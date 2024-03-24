@@ -5,8 +5,6 @@ export const getDealsParams = Joi.object({
 });
 
 export const getDealsBody = Joi.object({
-	userData: Joi.object({
-		currentLocation: Joi.array().items(Joi.number()).length(2).required(),
-		preferedDistanceInKm: Joi.number().required(),
-	}),
+	currentLocation: Joi.array().items(Joi.number()).length(2).required(),
+	preferedDistanceInKm: Joi.number().required(),
 });

@@ -21,7 +21,7 @@ const router = express.Router();
 // The 'categoryData' entity in the request body is specifically validated
 // The 'key' query parameter is used for API key authentication
 router.post(
-	"/new?key",
+	"/new",
 	checkForApiKey,
 	validateBody({
 		schema: categorySchemas.newCategory,
@@ -30,7 +30,7 @@ router.post(
 	checkForCategory({
 		checkIn: "body",
 		bodyEntity: "categoryData",
-		entity: "categoryName",
+		entity: "name",
 		passIfExists: false,
 		key: "name",
 	}),
@@ -41,10 +41,9 @@ router.post(
 // The route parameters are validated against the delCategorySchema
 // The 'key' query parameter is used for API key authentication
 router.delete(
-	"/:categoryName?key",
+	"/:categoryName",
 	checkForApiKey,
 	validateParams({ schema: categorySchemas.delCategory }),
-	catergoryControllers.delCategory,
 	checkForCategory({
 		checkIn: "params",
 		bodyEntity: undefined,
@@ -52,6 +51,7 @@ router.delete(
 		passIfExists: true,
 		key: "name",
 	}),
+	catergoryControllers.delCategory,
 );
 
 // Use the handleError middleware for error handling

@@ -1,7 +1,7 @@
 // Import types
 import type { NextFunction, Request, Response } from "express";
 import type mongoose from "mongoose";
-import type { T_idDeal } from "../models/deals";
+import type { T_idDeal } from "../models/deal";
 
 // Import necessary modules
 import ifDealExists from "../helpers/models/dealExists";
@@ -10,7 +10,7 @@ import validateDocumentExistence from "./helpers/valDocExistence";
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type DealCheckOptions =
+export type DealCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
@@ -53,7 +53,7 @@ const checkForDeal = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: dealExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -72,20 +72,13 @@ const checkForDeal = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: dealExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
 					break;
-
-				default: {
-					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-					const err = new CustomError(errMessage);
-
-					throw err;
-				}
 			}
 		} catch (err) {
 			// Handle the caught error by passing it to the augmentAndForwardError function which will pass it to the error handling middleware

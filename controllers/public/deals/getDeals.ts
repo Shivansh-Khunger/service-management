@@ -38,26 +38,12 @@ export const getDeals: RequestHandler = async (req, res, next) => {
 				},
 				{
 					$match: {
-						$and: [
-							{ subCategory: { $in: prefferedCategories.interestArray } },
-							{
-								// geoLocation: {
-								// 	$near: {
-								// 		$geometry: {
-								// 			type: "Point",
-								// 			coordinates: userData.currentLocation,
-								// 		},
-								// 		$minDistance: 150,
-								// 		$maxDistance: userData.preferedDistanceInKm * 1000,
-								// 	},
-								// },
-							},
-						],
+						subCategory: { $in: prefferedCategories.interestArray },
 					},
 				},
 				{
 					$lookup: {
-						from: "Deals",
+						from: "deals",
 						localField: "_id",
 						foreignField: "businessId",
 						as: "deal",
@@ -68,7 +54,7 @@ export const getDeals: RequestHandler = async (req, res, next) => {
 				},
 				{
 					$lookup: {
-						from: "Products",
+						from: "products",
 						localField: "deal.productId",
 						foreignField: "_id",
 						as: "deal.product",
@@ -83,6 +69,8 @@ export const getDeals: RequestHandler = async (req, res, next) => {
 				resMessage = `request to get deals for user -:${userId} is successfull.`;
 
 				resPayload.setSuccess(resMessage, deals);
+
+				res.log.info(resPayload, `-> response for ${funcName} function`);
 
 				return res.status(200).json(resPayload);
 			}

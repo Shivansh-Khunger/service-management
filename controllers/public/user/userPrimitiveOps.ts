@@ -8,7 +8,7 @@ import hashPassword from "../../../helpers/hashPassword";
 import { ifUserExistsByEmail } from "../../../helpers/models/userExists";
 
 import augmentAndForwardError from "../../../utils/errorAugmenter";
-import generateReferal from "../../../utils/referalGenerator.js";
+import generateReferal from "../../../utils/referalGenerator";
 import ResponsePayload from "../../../utils/resGenerator";
 
 // TODO -> think & implement auth soln.
@@ -55,19 +55,9 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
 			// Attempt to create a new user with the provided data
 			const newUser = await user.create({
-				name: userData.name,
-				email: userData.email,
-				phoneNumber: userData.phoneNumber,
+				...userData,
 				password: hashedPassword,
 				referalCode: referalCode,
-				countryCode: userData.countryCode,
-				pushToken: userData.pushToken,
-				profilePic: userData.profilePic,
-				imeiNumber: userData.imeiNumber,
-				geoLocation: [
-					userData.geoLocation.longi || 0,
-					userData.geoLocation.lati || 0,
-				],
 			});
 
 			// If the user was created successfully, send a success response

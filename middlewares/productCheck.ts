@@ -10,7 +10,7 @@ import validateDocumentExistence from "./helpers/valDocExistence";
 import CustomError from "../utils/customError";
 import augmentAndForwardError from "../utils/errorAugmenter";
 
-type ProductCheckOptions =
+export type ProductCheckOptions =
 	| {
 			checkIn: "body";
 			bodyEntity: string;
@@ -52,7 +52,7 @@ const checkForProduct = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: productExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
@@ -69,19 +69,13 @@ const checkForProduct = ({
 					});
 
 					validateDocumentExistence({
-						nextFuncion: next,
+						nextFunction: next,
 						docExists: productExists,
 						passIfExists: passIfExists,
 						collection: collectionName,
 						collectionAttr: valToKey,
 					});
 					break;
-				default: {
-					errMessage = `the request could not be completed because the checkIn-: ${checkIn} is not supported.`;
-					const err = new CustomError(errMessage);
-
-					throw err;
-				}
 			}
 		} catch (err) {
 			augmentAndForwardError({
