@@ -1,9 +1,9 @@
-import type reqFlags from "../../utils/requestFlags";
+import type reqFlags from "../../src/utils/requestFlags";
 
 declare global {
-	namespace Express {
-		export interface Request {
-			flags: reqFlags;
-		}
-	}
+    namespace Express {
+        export interface Request {
+            flags: reqFlags;
+        }
+    }
 }
