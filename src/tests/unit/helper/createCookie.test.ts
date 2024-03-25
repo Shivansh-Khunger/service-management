@@ -1,6 +1,5 @@
+// Import types
 import type { Response } from "express";
-
-// Import necessary modules
 
 // Import function(s) to be tested
 import { insertJWT } from "@helpers/createCookie";

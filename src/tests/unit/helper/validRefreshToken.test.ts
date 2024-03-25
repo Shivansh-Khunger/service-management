@@ -1,5 +1,7 @@
-// import necessary modules
+// Import function to be tested
 import isRefreshTokenValid from "@helpers/validRefreshToken";
+
+// Import necessary modules
 import CustomError from "@utils/customError";
 import jwt from "jsonwebtoken";
 
@@ -44,7 +46,7 @@ describe(`helper -> ${funcName} tests`, () => {
     let expectedError: CustomError;
 
     // Test if the function throws the appropriate error when the token is expired
-    test("if throws appropriate error when token is expired", () => {
+    test("if Throws appropriate error when token is expired", () => {
         // Make the 'verify' function throw a 'TokenExpiredError'
         mockVerify.mockImplementation(() => {
             const err = new Error();
@@ -66,7 +68,7 @@ describe(`helper -> ${funcName} tests`, () => {
     });
 
     // Test if the function throws the appropriate error when the token is invalid
-    test("if throws appropriate error when token is invalid", () => {
+    test("if Throws appropriate error when token is invalid", () => {
         // Make the 'verify' function throw a 'JsonWebTokenError'
         mockVerify.mockImplementation(() => {
             const err = new Error();

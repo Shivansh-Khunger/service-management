@@ -1,5 +1,7 @@
-// import necessary modules
+// Import function(s) to be tested
 import createToken from "@helpers/createTokens";
+
+// import necessary modules
 import type { JWT } from "@helpers/createTokens";
 import jwt from "jsonwebtoken";
 
