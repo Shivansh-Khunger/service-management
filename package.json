@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "dotenvx run --env-file=.env.development -- tsx ./src/index.ts",
         "start": "node index.js",
-        "test": "export NODE_ENV=test && jest --coverage"
+        "test": "export NODE_ENV=test && jest --coverage",
+        "build": "tspc"
     },
     "dependencies": {
         "@dotenvx/dotenvx": "^0.24.0",
