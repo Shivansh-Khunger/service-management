@@ -4,8 +4,9 @@ import express from "express";
 // Import product controllers
 import * as productControllers from "@controllers/public/product/index";
 
-import { validateBody, validateParams } from "@middlewares/inputValidator";
 // Import middlewares
+import checkForAccessToken from "@middlewares/accessTokenCheck";
+import { validateBody, validateParams } from "@middlewares/inputValidator";
 import checkForProduct from "@middlewares/productCheck";
 
 // Import error handling middleware
@@ -16,6 +17,9 @@ import * as productSchemas from "@validations/product";
 
 // Initialize a new router
 const router = express.Router();
+
+// Apply 'checkForAccessToken' middleware to all subsequent routes
+router.use(checkForAccessToken);
 
 // Define a POST route for creating a new product
 // The request body is validated against the newProductSchema

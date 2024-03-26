@@ -5,6 +5,7 @@ import express from "express";
 import * as userControllers from "@controllers/public/user/index";
 
 // Import middlewares
+import checkForAccessToken from "@middlewares/accessTokenCheck";
 import handleError from "@middlewares/errorHandler";
 import { validateBody, validateParams } from "@middlewares/inputValidator";
 
@@ -22,6 +23,9 @@ router.post(
     validateBody({ schema: userSchemas.newUser, entity: "userData" }),
     userControllers.newUser,
 );
+
+// Apply 'checkForAccessToken' middleware to all subsequent routes
+router.use(checkForAccessToken);
 
 // Define a DELETE route for deleting a user
 // The route parameters are validated against the deleteUserSchema

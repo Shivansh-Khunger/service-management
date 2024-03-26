@@ -5,6 +5,7 @@ import express from "express";
 import * as dealControllers from "@controllers/public/deals";
 
 // Import validation middlewares
+import checkForAccessToken from "@middlewares/accessTokenCheck";
 import checkForBusiness from "@middlewares/businessCheck";
 import checkForDeal from "@middlewares/dealCheck";
 import { validateBody, validateParams } from "@middlewares/inputValidator";
@@ -18,6 +19,9 @@ import * as dealSchemas from "@validations/deal";
 
 // Initialize a new router
 const router = express.Router();
+
+// Apply 'checkForAccessToken' middleware to all subsequent routes
+router.use(checkForAccessToken);
 
 // Define a POST route for creating a new deal
 // The request body is validated against the newDealSchema
