@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Importing necessary modules
-import product from "@models/product";
+import Product from "@models/product";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -20,7 +20,7 @@ export const updateProduct: RequestHandler = async (req, res, next) => {
     const { productId } = req.params;
     try {
         // Attempt to find the product by its ID and update it
-        const updatedProduct = await product.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             latestProduct,
             { new: true },

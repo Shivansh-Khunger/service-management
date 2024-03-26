@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Importing necessary modules
-import product from "@models/product";
+import Product from "@models/product";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -19,7 +19,7 @@ export const newProduct: RequestHandler = async (req, res, next) => {
 
     try {
         // Attempt to create the new product
-        const newProduct = await product.create({ ...productData });
+        const newProduct = await Product.create({ ...productData });
 
         let resMessage = "";
         const resLogMessage = `-> response for ${funcName} controller`;
@@ -61,7 +61,7 @@ export const delProduct: RequestHandler = async (req, res, next) => {
     let resMessage = "";
     try {
         // Attempt to find and delete the product by its Id
-        const deletedProduct = await product.findByIdAndDelete(productId);
+        const deletedProduct = await Product.findByIdAndDelete(productId);
 
         const resLogMessage = `-> response for ${funcName} controller`;
 

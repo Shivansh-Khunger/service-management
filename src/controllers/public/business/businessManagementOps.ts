@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Importing necessary modules
-import business from "@models/business";
+import Business from "@models/business";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -21,7 +21,7 @@ export const updateBusiness: RequestHandler = async (req, res, next) => {
 
     try {
         // Attempt to find the business by its ID and update it
-        const updatedBusiness = await business.findByIdAndUpdate(
+        const updatedBusiness = await Business.findByIdAndUpdate(
             businessId,
             latestBusiness,
             { new: true },

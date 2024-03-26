@@ -2,7 +2,7 @@
 import type { RequestHandler } from "express";
 
 // Importing necessary modules
-import user from "@models/user";
+import User from "@models/user";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -21,7 +21,7 @@ export const updateUser: RequestHandler = async (req, res, next) => {
 
     try {
         // Attempt to find the user by its ID and update it
-        const updatedUser = await user.findByIdAndUpdate(userId, latestUser, {
+        const updatedUser = await User.findByIdAndUpdate(userId, latestUser, {
             new: true,
         });
 

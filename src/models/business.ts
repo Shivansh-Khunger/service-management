@@ -117,5 +117,5 @@ const businessSchema = new mongoose.Schema(
     },
 );
 
-const business = mongoose.model<TBusiness>("Business", businessSchema);
-export default business;
+const Business = mongoose.model<TBusiness>("Business", businessSchema);
+export default Business;

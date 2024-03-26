@@ -32,7 +32,7 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Create the Category model using the schema
-const category = mongoose.model<TCategory>("Category", categorySchema);
+const Category = mongoose.model<TCategory>("Category", categorySchema);
 
 // Export the Category model
-export default category;
+export default Category;

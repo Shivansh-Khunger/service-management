@@ -13,7 +13,7 @@ export const getDeals: RequestHandler = async (req, res, next) => {
 
     const resPayload = new ResponsePayload();
 
-    const { userId } = req.params;
+    const { userId } = req.signedCookies;
     const { userData } = req.body;
 
     try {
