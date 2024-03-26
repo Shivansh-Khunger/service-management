@@ -19,6 +19,7 @@
             "@routes/*": ["./src/routes/*"],
             "@utils/*": ["./src/utils/*"],
             "@validations/*": ["./src/validations/*"],
+            "@services/*": ["./src/services/*"],
             "@logger": ["./src/logger"]
         },
         "plugins": [{ "transform": "typescript-transform-paths" }]
