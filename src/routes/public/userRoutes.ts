@@ -15,6 +15,15 @@ import * as userSchemas from "@validations/user";
 // Initialize a new router
 const router = express.Router();
 
+// Define a POST route for user login
+// The request body is validated against the loginUser schema
+// The 'userCredentials' entity in the request body is specifically validated
+router.post(
+    "/login",
+    validateBody({ schema: userSchemas.loginUser, entity: "userCredentials" }),
+    userControllers.loginUser,
+);
+
 // Define a POST route for creating a new user
 // The request body is validated against the newUserSchema
 // The 'userData' entity in the request body is specifically validated
