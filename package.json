@@ -4,7 +4,7 @@
     "description": "this is the service management service for iJUJU.",
     "main": "index.js",
     "scripts": {
-        "dev": "dotenvx run --env-file=.env.development -- tsx ./src/index.ts",
+        "dev": "dotenvx run --env-file=.env.development -- tsx watch ./src/index.ts",
         "start": "node index.js",
         "test": "export NODE_ENV=test && jest --coverage",
         "build": "tspc"
