@@ -108,7 +108,7 @@ describe(`controller -> ${funcName} tests`, () => {
                 body: {
                     latestUser: mockLatestUser,
                 },
-                params: {
+                userCredentials: {
                     userId: mockUserId,
                 },
             };
