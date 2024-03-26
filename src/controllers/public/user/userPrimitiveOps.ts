@@ -14,8 +14,7 @@ import augmentAndForwardError from "@utils/errorAugmenter";
 import generateReferal from "@utils/referalGenerator";
 import ResponsePayload from "@utils/resGenerator";
 
-// TODO -> think & implement auth soln.
-
+const collectionName = "User";
 // Function to creates a new user
 export const newUser: RequestHandler = async (req, res, next) => {
     const funcName = "newUser";
@@ -42,7 +41,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
             // If a referral code was provided, increment the bounty of the user who provided the referral code
             if (referalCode !== "") {
-                const userWithReferalCode = User.updateOne(
+                User.updateOne(
                     {
                         referalCode: referalCode,
                     },
@@ -109,7 +108,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
                     maxAge: userRefreshCookieMaxAge,
                 });
 
-                resMessage = `Request to create a user with name-: ${userData.name} and email -:${userData.email} is successfull.`;
+                resMessage = `Request to create ${collectionName} with name-: ${userData.name} and email -: ${userData.email} is successfull.`;
                 resPayload.setSuccess(resMessage, newUser);
 
                 res.log.info(resPayload, resLogMessage);
@@ -117,7 +116,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
                 return res.status(201).json(resPayload);
             }
             // If the user was not created successfully, send a conflict response
-            resMessage = `Request to create a user with name-: ${userData.name} and email -:${userData.email} is not successfull.`;
+            resMessage = `Request to create ${collectionName} with name-: ${userData.name} and email -: ${userData.email} is unsuccessfull.`;
 
             resPayload.setConflict(resMessage);
 
@@ -126,7 +125,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
             return res.status(409).json(resPayload);
         }
         // If a user with the same email or phone number already exists, send a conflict response
-        resMessage = `Request to create a user with the email-: ${userData.email} and phone number-:${userData.phoneNumber} was not successful because a user with these details already exists.`;
+        resMessage = `Request to create ${collectionName} with the email-: ${userData.email} and phone number-:${userData.phoneNumber} was not successful because a user with these details already exists.`;
 
         resPayload.setConflict(resMessage);
 
@@ -140,27 +139,27 @@ export const newUser: RequestHandler = async (req, res, next) => {
 };
 
 export const delUser: RequestHandler = async (req, res, next) => {
-    const funcName = "deleteUser";
+    const funcName = "delUser";
 
     const resPayload = new ResponsePayload();
 
     const { userId } = req.userCredentials;
 
     try {
-        Business.deleteMany({
-            userId: userId,
-        });
-
-        Product.deleteMany({
-            userId: userId,
-        });
-
         const deletedUser = await User.findByIdAndDelete(userId);
 
         let resMessage: string;
 
         if (deletedUser?._id.toString() === userId) {
-            resMessage = `the request to delete the user-: ${userId} is successfull.`;
+            Business.deleteMany({
+                userId: userId,
+            });
+
+            Product.deleteMany({
+                userId: userId,
+            });
+
+            resMessage = `the request to delete the ${collectionName}-: ${userId} is successfull.`;
 
             resPayload.setSuccess(resMessage);
 
@@ -170,7 +169,7 @@ export const delUser: RequestHandler = async (req, res, next) => {
             );
             res.status(200).json(resPayload);
         } else {
-            resMessage = `the request to delete the user-: ${userId} is not successfull.`;
+            resMessage = `the request to delete the ${collectionName}-: ${userId} is not successfull.`;
 
             resPayload.setConflict(resMessage);
 
