@@ -2,8 +2,8 @@
 import type { RequestHandler } from "express";
 
 // Import the necessary modules
-import category from "@models/category";
-import subCategory from "@models/subCategory";
+import Category from "@models/category";
+import SubCategory from "@models/subCategory";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -25,7 +25,7 @@ export const newCategory: RequestHandler = async (req, res, next) => {
         const resLogMessage = `-> response payload for ${funcName} controller`;
 
         // Create a new category
-        const newCategory = await category.create({ ...categoryData });
+        const newCategory = await Category.create({ ...categoryData });
 
         if (newCategory) {
             // If the category was created successfully, set the success message
@@ -74,12 +74,12 @@ export const delCategory: RequestHandler = async (req, res, next) => {
         const resLogMessage = `-> response payload for ${funcName} controller`;
 
         // Delete the category
-        const deletedCategory = await category.findOneAndDelete({
+        const deletedCategory = await Category.findOneAndDelete({
             name: categoryName,
         });
 
         // Delete all subcategories associated with the category
-        subCategory
+        SubCategory
             .deleteMany({
                 categoryId: deletedCategory?._id,
             })

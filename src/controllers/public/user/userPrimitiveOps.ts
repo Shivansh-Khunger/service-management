@@ -1,16 +1,20 @@
 // Import types
+import type { JWT } from "@helpers/createTokens";
 import type { RequestHandler } from "express";
 
 // Import necessary modules
+import { insertJWT } from "@helpers/createCookie";
+import createToken from "@helpers/createTokens";
 import hashPassword from "@helpers/hashPassword";
 import { ifUserExistsByEmail } from "@helpers/models/userExists";
-import user from "@models/user";
+import Business from "@models/business";
+import Product from "@models/product";
+import User from "@models/user";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import generateReferal from "@utils/referalGenerator";
 import ResponsePayload from "@utils/resGenerator";
 
-// TODO -> think & implement auth soln.
-
+const collectionName = "User";
 // Function to creates a new user
 export const newUser: RequestHandler = async (req, res, next) => {
     const funcName = "newUser";
@@ -37,7 +41,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
             // If a referral code was provided, increment the bounty of the user who provided the referral code
             if (referalCode !== "") {
-                const userWithReferalCode = user.updateOne(
+                User.updateOne(
                     {
                         referalCode: referalCode,
                     },
@@ -52,7 +56,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
             const hashedPassword = await hashPassword(userData.password);
 
             // Attempt to create a new user with the provided data
-            const newUser = await user.create({
+            const newUser = await User.create({
                 ...userData,
                 password: hashedPassword,
                 referalCode: referalCode,
@@ -60,7 +64,51 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
             // If the user was created successfully, send a success response
             if (newUser) {
-                resMessage = `the request to create a user with name-: ${userData.name} and email -:${userData.email} is successfull.`;
+                // Create the payload for the access token
+                const userAccessTokenPayload: JWT = {
+                    sub: newUser._id.toString(), // The subject of the token is the user's ID
+                };
+
+                // Create the access token
+                const userAccessToken = createToken(
+                    userAccessTokenPayload,
+                    false, // This is not a refresh token
+                );
+
+                // Define the max age for the access token cookie
+                const userAccessCookieMaxAge = 1000 * 60 * 60; // One hour
+
+                // Insert the access token into a cookie
+                insertJWT({
+                    res: res, // The response object
+                    field: "accessToken", // The name of the cookie
+                    fieldValue: userAccessToken, // The value of the cookie
+                    maxAge: userAccessCookieMaxAge, // The max age of the cookie
+                });
+
+                // Create a payload for the new refresh token
+                const userRefreshTokenPayload: JWT = {
+                    sub: newUser._id.toString(),
+                };
+
+                // Create a new refresh token
+                const userRefreshToken = createToken(
+                    userRefreshTokenPayload,
+                    true,
+                );
+
+                // Define the max age for the refresh token cookie (1 week)
+                const userRefreshCookieMaxAge = 1000 * 60 * 60 * 24 * 7;
+
+                // Insert the new refresh token into a cookie
+                insertJWT({
+                    res: res,
+                    field: "refreshToken",
+                    fieldValue: userRefreshToken,
+                    maxAge: userRefreshCookieMaxAge,
+                });
+
+                resMessage = `Request to create ${collectionName} with name-: ${userData.name} and email -: ${userData.email} is successfull.`;
                 resPayload.setSuccess(resMessage, newUser);
 
                 res.log.info(resPayload, resLogMessage);
@@ -68,7 +116,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
                 return res.status(201).json(resPayload);
             }
             // If the user was not created successfully, send a conflict response
-            resMessage = `the request to create a user with name-: ${userData.name} and email -:${userData.email} is not successfull.`;
+            resMessage = `Request to create ${collectionName} with name-: ${userData.name} and email -: ${userData.email} is unsuccessfull.`;
 
             resPayload.setConflict(resMessage);
 
@@ -77,7 +125,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
             return res.status(409).json(resPayload);
         }
         // If a user with the same email or phone number already exists, send a conflict response
-        resMessage = `The request to create a user with the email-: ${userData.email} and phone number-:${userData.phoneNumber} was not successful because a user with these details already exists.`;
+        resMessage = `Request to create ${collectionName} with the email-: ${userData.email} and phone number-:${userData.phoneNumber} was not successful because a user with these details already exists.`;
 
         resPayload.setConflict(resMessage);
 
@@ -91,33 +139,27 @@ export const newUser: RequestHandler = async (req, res, next) => {
 };
 
 export const delUser: RequestHandler = async (req, res, next) => {
-    const funcName = "deleteUser";
+    const funcName = "delUser";
 
     const resPayload = new ResponsePayload();
 
-    const { userId } = req.params;
+    const { userId } = req.userCredentials;
 
     try {
-        // TODO -> all models are not implemented yet.
-
-        // await Promise.all([
-        // 	Banner.remove({ user: userId }),
-        // 	Broadcast.remove({ user: userId }),
-        // 	ImAvailable.remove({ user: userId }),
-        // 	Imoccupiedby.remove({ user: userId }),
-        // 	ProductDeal.remove({ user: userId }),
-        // 	ProductMaster.remove({ user: userId }),
-        // 	UserBusiness.remove({ user: userId }),
-        // ]);
-
-        // mongoose returns the
-        const messageFromDb = await user.findByIdAndDelete(userId);
+        const deletedUser = await User.findByIdAndDelete(userId);
 
         let resMessage: string;
 
-        console.log(messageFromDb);
-        if (messageFromDb?._id.toString() === userId) {
-            resMessage = `the request to delete the user-: ${userId} is successfull.`;
+        if (deletedUser?._id.toString() === userId) {
+            Business.deleteMany({
+                userId: userId,
+            });
+
+            Product.deleteMany({
+                userId: userId,
+            });
+
+            resMessage = `the request to delete the ${collectionName}-: ${userId} is successfull.`;
 
             resPayload.setSuccess(resMessage);
 
@@ -127,7 +169,7 @@ export const delUser: RequestHandler = async (req, res, next) => {
             );
             res.status(200).json(resPayload);
         } else {
-            resMessage = `the request to delete the user-: ${userId} is not successfull.`;
+            resMessage = `the request to delete the ${collectionName}-: ${userId} is not successfull.`;
 
             resPayload.setConflict(resMessage);
 

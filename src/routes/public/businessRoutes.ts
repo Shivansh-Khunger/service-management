@@ -5,6 +5,7 @@ import express from "express";
 import * as businessControllers from "@controllers/public/business/index";
 
 // Import middlewares
+import checkForAccessToken from "@middlewares/accessTokenCheck";
 import checkForBusiness from "@middlewares/businessCheck";
 import { validateBody, validateParams } from "@middlewares/inputValidator";
 
@@ -16,6 +17,9 @@ import * as businessSchemas from "@validations/business";
 
 // Initialize a new router
 const router = express.Router();
+
+// Apply 'checkForAccessToken' middleware to all subsequent routes
+router.use(checkForAccessToken);
 
 // Define a POST route for creating a new business
 // The request body is validated against the newBusinessSchema

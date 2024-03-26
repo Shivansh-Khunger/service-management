@@ -187,11 +187,14 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# enviorment variables
+# Enviorment variables
 .env.*
 
-# test data
+# Test data
 *.csv
 test-data.json
+
+# SSL certificated
+ssl
 
 # End of https://www.gitignore.io/api/git,node,macos,windows,visualstudiocode

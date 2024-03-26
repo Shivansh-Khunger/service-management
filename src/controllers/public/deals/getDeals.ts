@@ -3,21 +3,22 @@ import type { RequestHandler } from "express";
 import type { PipelineStage } from "mongoose";
 
 // Import necessary modules
-import business from "@models/business";
-import user from "@models/user";
+import Business from "@models/business";
+import User from "@models/user";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
+const collectionName = "Deals"
 export const getDeals: RequestHandler = async (req, res, next) => {
     const funcName = "getDeals";
 
     const resPayload = new ResponsePayload();
 
-    const { userId } = req.params;
+    const { userId } = req.userCredentials;
     const { userData } = req.body;
 
     try {
-        const prefferedCategories = await user.findById(userId, {
+        const prefferedCategories = await User.findById(userId, {
             interestArray: true,
         });
 
@@ -61,11 +62,11 @@ export const getDeals: RequestHandler = async (req, res, next) => {
                 },
             ];
 
-            const deals = await business.aggregate(pipeline);
+            const deals = await Business.aggregate(pipeline);
 
             let resMessage = "";
             if (deals) {
-                resMessage = `request to get deals for user -:${userId} is successfull.`;
+                resMessage = `Request to get ${collectionName} for user -:${userId} is successfull.`;
 
                 resPayload.setSuccess(resMessage, deals);
 
@@ -76,13 +77,13 @@ export const getDeals: RequestHandler = async (req, res, next) => {
 
                 return res.status(200).json(resPayload);
             }
-            resMessage = `request to get deals for user -:${userId} is not successfull.`;
+            resMessage = `Request to get ${collectionName} for user -:${userId} is not successfull.`;
 
             resPayload.setConflict(resMessage);
 
             return res.status(409).json(resPayload);
         }
-        const resMessage = `request to get deals for user -:${userId} is not successfull beacause unable to get intrests for the user.`;
+        const resMessage = `Request to get ${collectionName} for user -:${userId} is not successfull beacause unable to get intrests for the user.`;
 
         resPayload.setError(resMessage);
 

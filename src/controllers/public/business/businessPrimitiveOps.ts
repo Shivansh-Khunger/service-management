@@ -2,7 +2,8 @@
 import type { RequestHandler } from "express";
 
 // Importing necessary modules
-import business from "@models/business";
+import Business from "@models/business";
+import Product from "@models/product";
 import augmentAndForwardError from "@utils/errorAugmenter";
 import ResponsePayload from "@utils/resGenerator";
 
@@ -19,7 +20,7 @@ export const newBusiness: RequestHandler = async (req, res, next) => {
 
     try {
         // Create a new business with the data from the request body
-        const newBusiness = await business.create({
+        const newBusiness = await Business.create({
             ...businessData,
         });
 
@@ -64,7 +65,9 @@ export const delBusiness: RequestHandler = async (req, res, next) => {
 
     try {
         // Delete the business with the id from the request parameters
-        const deletedBusiness = await business.findByIdAndDelete(businessId);
+        const deletedBusiness = await Business.findByIdAndDelete(businessId);
+
+        Product.deleteMany({ businessId: businessId });
 
         const resLogMessage = `-> response for ${funcName} controller`;
 
