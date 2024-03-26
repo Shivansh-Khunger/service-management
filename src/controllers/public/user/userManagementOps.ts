@@ -14,7 +14,7 @@ export const updateUser: RequestHandler = async (req, res, next) => {
     const resPayload = new ResponsePayload();
 
     // Extract the user Id from request params
-    const { userId } = req.params;
+    const { userId } = req.userCredentials;
 
     // Extract the updated user data from the request body
     const { latestUser } = req.body;
