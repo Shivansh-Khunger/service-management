@@ -63,7 +63,3 @@ export const newUser = Joi.object({
     ...locationInfo,
     ...bountyInfo,
 });
-
-export const delUser = Joi.object({
-    userId: Joi.string().length(24).required(),
-});
