@@ -15,7 +15,7 @@ jobs:
               with:
                   sparse-checkout: |
                       .github
-                      src/jobs/DeleteExpiredDealsJob.ts
+                      src/jobs/delExpDealsJob.ts
                       src/models/Deals.ts
 
             - uses: actions/setup-node@v4
@@ -32,7 +32,7 @@ jobs:
               run: npm ci --ignore-scripts
 
             - name: Compile Typescript
-              run: npx tsc ./src/jobs/DeleteExpiredDealsJob.ts
+              run: npx tsc ./src/jobs/delExpDealsJob.ts
 
             - name: Run Compiled Job
-              run: npx dotenvx run -- node ./src/jobs/DeleteExpiredDealsJob.js
+              run: npx dotenvx run -- node ./src/jobs/delExpDealsJob.js
