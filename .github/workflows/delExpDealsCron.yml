@@ -1,0 +1,38 @@
+name: Delete Expired Deals
+
+on:
+    schedule:
+        - cron: '* */4 * * *'
+
+jobs:
+    DeleteExpiredDealsJob:
+        runs-on: ubuntu-latest
+
+        environment: dev
+        steps:
+            - name: Checkout Required Files
+              uses: actions/checkout@v4
+              with:
+                  sparse-checkout: |
+                      .github
+                      src/jobs/delExpDealsJob.ts
+                      src/models/Deals.ts
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
+
+            - name: Create .env File
+              run: |
+                  touch .env:
+                  echo MONGO_URI="${{secrets.MONGO_URI}}" >> .env
+
+            - name: Install Dependencies
+              run: npm ci --ignore-scripts
+
+            - name: Compile Typescript
+              run: npx tsc ./src/jobs/delExpDealsJob.ts
+
+            - name: Run Compiled Job
+              run: npx dotenvx run -- node ./src/jobs/delExpDealsJob.js
