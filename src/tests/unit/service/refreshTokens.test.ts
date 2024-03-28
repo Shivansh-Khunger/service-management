@@ -1,43 +1,43 @@
 // Import Types
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 // Import function(s) to be tested
-import { assignNewRefreshToken } from "@services/refreshTokens";
+import { assignNewRefreshToken } from '@services/refreshTokens';
 
 // Import necessary modules
-import { insertJWT } from "@helpers/createCookie";
-import createToken from "@helpers/createTokens";
-import isRefreshTokenValid from "@helpers/validRefreshToken";
-import { logger } from "@logger";
-import CustomError from "@utils/customError";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
+import { insertJWT } from '@helpers/createCookie';
+import createToken from '@helpers/createTokens';
+import isRefreshTokenValid from '@helpers/validRefreshToken';
+import { logger } from '@logger';
+import CustomError from '@utils/customError';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
 
 // Mock the 'isRefreshTokenValid' helper function
-jest.mock("@helpers/validRefreshToken", () => ({
+jest.mock('@helpers/validRefreshToken', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Mock the 'insertJWT' helper function
-jest.mock("@helpers/createCookie", () => ({
+jest.mock('@helpers/createCookie', () => ({
     insertJWT: jest.fn(),
 }));
 
 // Mock the 'augmentAndForwardError' utility function
-jest.mock("@utils/errorAugmenter", () => ({
+jest.mock('@utils/errorAugmenter', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Mock the 'createToken' helper function
-jest.mock("@helpers/createTokens", () => ({
+jest.mock('@helpers/createTokens', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Define the function name for logging purposes
-const funcName = "assignNewRefreshToken";
+const funcName = 'assignNewRefreshToken';
 
 // Start a test suite for the assignNewRefreshToken service function
 describe(`service -> ${funcName} tests`, () => {
@@ -49,22 +49,26 @@ describe(`service -> ${funcName} tests`, () => {
 
     // Define a mock decoded JWT
     const mockJWTDecode = {
-        sub: "userId",
+        sub: 'userId',
+        userData: {
+            userName: 'mockName',
+            userEmail: 'mockEmail',
+        },
     };
 
     // Before each test, initialize the mock request and response
     beforeEach(() => {
         mockRequest = {
             signedCookies: {
-                refreshToken: "mockRefreshToken",
+                refreshToken: 'mockRefreshToken',
             },
         };
         mockResponse = {
-            status: jest.fn().mockImplementation((statusCode) => {
+            status: jest.fn().mockImplementation(statusCode => {
                 mockResponse.status = statusCode;
                 return mockResponse;
             }),
-            json: jest.fn().mockImplementation((resPayload) => {
+            json: jest.fn().mockImplementation(resPayload => {
                 mockResponse.json = resPayload;
                 return mockResponse;
             }),
@@ -80,9 +84,9 @@ describe(`service -> ${funcName} tests`, () => {
     const mockCreateToken = createToken as jest.Mock;
 
     // Test if the function sends the appropriate response when a new refresh token is assigned
-    test("if Sends appropiate response when new refresh token is appropiatly assigned", async () => {
+    test('if Sends appropiate response when new refresh token is appropiatly assigned', async () => {
         // Define a mock token
-        const mockToken = "mockToken";
+        const mockToken = 'mockToken';
 
         // Make the 'isRefreshTokenValid' function return the mock decoded JWT
         mockisRefreshTokenValid.mockReturnValue(mockJWTDecode);
@@ -103,14 +107,14 @@ describe(`service -> ${funcName} tests`, () => {
         // Check if the function called 'insertJWT' with the expected parameters
         expect(insertJWT).toHaveBeenCalledWith({
             res: mockResponse,
-            field: "refreshToken",
+            field: 'refreshToken',
             fieldValue: mockToken,
             maxAge: userRefreshCookieMaxAge,
         });
 
         // Define the success message for the response
         const mockResMessage =
-            "Request to refresh the refresh token is successfull.";
+            'Request to refresh the refresh token is successfull.';
 
         // Set the success message in the mock response payload
         mockResPayload.setSuccess(mockResMessage);
@@ -124,9 +128,9 @@ describe(`service -> ${funcName} tests`, () => {
     });
 
     // Test if the function calls 'augmentAndForwardError' when an error is thrown
-    test("if Calls augmentAndForwardError when an error is thrown", async () => {
+    test('if Calls augmentAndForwardError when an error is thrown', async () => {
         // Define a mock error
-        const mockErr = new CustomError("mock Error");
+        const mockErr = new CustomError('mock Error');
 
         // Make the 'isRefreshTokenValid' function throw the mock error
         mockisRefreshTokenValid.mockImplementation(() => {

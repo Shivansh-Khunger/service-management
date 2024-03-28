@@ -1,22 +1,24 @@
 // Importing types
-import type { RequestHandler } from "express";
+import type { RequestHandler } from 'express';
 
 // Importing necessary modules
-import Business from "@models/business";
-import Product from "@models/product";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
+import Business from '@models/business';
+import Product from '@models/product';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
 
-export const collectionName = "Business";
+export const collectionName = 'Business';
 // Function to create a new business
 export const newBusiness: RequestHandler = async (req, res, next) => {
-    const funcName = "newBusiness";
+    const funcName = 'newBusiness';
 
     // Create a new instance of ResponsePayloadim
     const resPayload = new ResponsePayload();
 
     // Extract business object from request body
     const { businessData } = req.body;
+    const { userName, userEmail } = req.userCredentials;
 
     try {
         // Create a new business with the data from the request body
@@ -24,10 +26,16 @@ export const newBusiness: RequestHandler = async (req, res, next) => {
             ...businessData,
         });
 
-        let resMessage = "";
+        let resMessage = '';
         const resLogMessage = `-> response for ${funcName} function`;
 
         if (newBusiness) {
+            axios.post(`${process.env.SERVICE_EMAIL_URL}b/new`, {
+                recipientEmail: userEmail,
+                recipientName: userName,
+                businessName: newBusiness.name,
+            });
+
             // Create a success message
             resMessage = `Request to create ${collectionName}-: ${businessData.name} is successfull.`;
 
@@ -55,23 +63,32 @@ export const newBusiness: RequestHandler = async (req, res, next) => {
 
 // Function to delete a business
 export const delBusiness: RequestHandler = async (req, res, next) => {
-    const funcName = "delBusiness";
+    const funcName = 'delBusiness';
 
     // Create a new instance of ResponsePayload
     const resPayload = new ResponsePayload();
 
     // Extract business id from request params
     const { businessId } = req.params;
+    const { userName, userEmail } = req.userCredentials;
 
     try {
         // Delete the business with the id from the request parameters
-        const deletedBusiness = await Business.findByIdAndDelete(businessId);
+        const deletedBusiness = await Business.findByIdAndDelete(businessId, {
+            name: true,
+        });
 
         Product.deleteMany({ businessId: businessId });
 
         const resLogMessage = `-> response for ${funcName} controller`;
 
         if (deletedBusiness?._id.toString() === businessId) {
+            axios.post(`${process.env.SERVICE_EMAIL_URL}b/new`, {
+                recipientEmail: userEmail,
+                recipientName: userName,
+                businessName: deletedBusiness.name,
+            });
+
             // If the business was successfully deleted
             // Set the success message
             const resMessage = `Request to delete ${collectionName}-: ${businessId} is successfull.`;

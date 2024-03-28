@@ -1,16 +1,32 @@
+// Import types
+import type { JwtPayload } from 'jsonwebtoken';
+
 // Importing the jsonwebtoken library
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 // Defining the JWT type
 export type JWT = {
     sub: string; // Subject of the token (usually the user ID)
+    userData?: {
+        name: string; // Name of the user
+        email: string; // Email of the user
+    };
     iat?: Date; // Issued at - Date when the token was created
     exp?: Date; // Expiry date of the token
 };
 
+// Extending the JwtPayload interface from jsonwebtoken package
+// to include userData field
+export interface CustomJwtPayload extends JwtPayload {
+    userData?: {
+        name: string; // Name of the user
+        email: string; // Email of the user
+    };
+}
+
 // Defining the expiry times for the access and refresh tokens
-const ACCESS_TOKEN_EXPIRY = "1h";
-const REFRESH_TOKEN_EXPIRY = "7 Days";
+const ACCESS_TOKEN_EXPIRY = '1h';
+const REFRESH_TOKEN_EXPIRY = '7 Days';
 
 // Function to create a JWT token
 function createToken(payload: JWT, wantRefresh: boolean) {

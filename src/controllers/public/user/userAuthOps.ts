@@ -99,9 +99,13 @@ export const loginUser: RequestHandler = async (req, res, next) => {
                 // Execute the aggregation pipeline
                 const user = await User.aggregate(pipeline);
 
-                // Define the payload for the access token
+                // Create the payload for the access token
                 const userAccessTokenPayload: JWT = {
-                    sub: tempUser._id.toString(), // The subject of the token is the user's ID
+                    sub: user[0]._id.toString(), // The subject of the token is the user's ID
+                    userData: {
+                        name: user[0].name,
+                        email: user[0].email,
+                    },
                 };
 
                 // Create the access token
@@ -116,14 +120,18 @@ export const loginUser: RequestHandler = async (req, res, next) => {
                 // Insert the access token into a cookie
                 insertJWT({
                     res: res, // The response object
-                    field: "accessToken", // The name of the cookie
+                    field: 'accessToken', // The name of the cookie
                     fieldValue: userAccessToken, // The value of the cookie
                     maxAge: userAccessCookieMaxAge, // The max age of the cookie
                 });
 
-                // Define the payload for the refresh token
+                // Create a payload for the new refresh token
                 const userRefreshTokenPayload: JWT = {
-                    sub: tempUser._id.toString(),
+                    sub: user[0]._id.toString(), // The subject of the token is the user's ID
+                    userData: {
+                        name: user[0].name,
+                        email: user[0].email,
+                    },
                 };
 
                 // Create the refresh token
@@ -138,7 +146,7 @@ export const loginUser: RequestHandler = async (req, res, next) => {
                 // Insert the refresh token into a cookie
                 insertJWT({
                     res: res,
-                    field: "refreshToken",
+                    field: 'refreshToken',
                     fieldValue: userRefreshToken,
                     maxAge: userRefreshCookieMaxAge,
                 });

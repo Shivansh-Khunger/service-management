@@ -1,53 +1,59 @@
 // Import Types
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 // Import function(s) to be tested
-import { delBusiness, newBusiness } from "@controllers/public/business";
+import { delBusiness, newBusiness } from '@controllers/public/business';
 
 // Import necessary modules
-import { logger } from "@logger";
-import business from "@models/business";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
-import { ObjectId } from "mongodb";
-import { generateNameforPrimitive } from "../../testNameGenerator";
+import { logger } from '@logger';
+import business from '@models/business';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
+import { ObjectId } from 'mongodb';
+import { generateNameforPrimitive } from '../../testNameGenerator';
 
 // Define mock data for a new business
 const mockNewBusinessData = {
-    name: "My Business",
-    owner: "65e1e153ebae16a07816bc4f",
+    name: 'My Business',
+    owner: '65e1e153ebae16a07816bc4f',
     openingTime: 1617254400,
     closingTime: 1617297600,
-    phoneNumber: "1234567890",
-    landline: "0987654321",
-    email: "business@example.com",
-    website: "https://www.example.com",
+    phoneNumber: '1234567890',
+    landline: '0987654321',
+    email: 'business@example.com',
+    website: 'https://www.example.com',
     imageUrls: [
-        "https://www.example.com/image1.jpg",
-        "https://www.example.com/image2.jpg",
+        'https://www.example.com/image1.jpg',
+        'https://www.example.com/image2.jpg',
     ],
     geoLocation: [40.712776, -74.005974],
-    upiId: "business@upi",
-    managerPhoneNumber: "1122334455",
-    managerEmail: "manager@example.com",
+    upiId: 'business@upi',
+    managerPhoneNumber: '1122334455',
+    managerEmail: 'manager@example.com',
 };
 
 // Mock the business model's create and findByIdAndDelete functions
-jest.mock("@models/business", () => ({
+jest.mock('@models/business', () => ({
     create: jest.fn(),
     findByIdAndDelete: jest.fn(),
 }));
 
 // Mock the error augmenter function
-jest.mock("@utils/errorAugmenter", () => ({
+jest.mock('@utils/errorAugmenter', () => ({
     __esModule: true,
     default: jest.fn(),
 }));
 
+// Mock the axios module to replace the 'post' method with a jest mock function
+jest.mock('axios', () => ({
+    post: jest.fn(),
+}));
+
 // Define the collection name and generate test names
-const collectionName = "Business";
+const collectionName = 'Business';
 const testNames = generateNameforPrimitive(collectionName);
-const funcName = "businessPrimitiveOps";
+const funcName = 'businessPrimitiveOps';
 
 // Start of test suite for business primitive operations
 describe(`controller -> ${funcName} tests`, () => {
@@ -58,41 +64,48 @@ describe(`controller -> ${funcName} tests`, () => {
     let resPayload: ResponsePayload;
     let resMessage: string;
 
+    const mockUserId = new ObjectId();
     // Set up the mock request and response before each test
     beforeEach(() => {
-        mockRequest = {};
+        mockRequest = {
+            userCredentials: {
+                userId: mockUserId.toString(),
+                userName: 'mockName',
+                userEmail: 'mockEmail',
+            },
+        };
         mockResponse = {
-            status: jest.fn().mockImplementation((statusCode) => {
+            status: jest.fn().mockImplementation(statusCode => {
                 mockResponse.status = statusCode;
                 return mockResponse;
             }),
-            json: jest.fn().mockImplementation((resPayload) => {
+            json: jest.fn().mockImplementation(resPayload => {
                 mockResponse.json = resPayload;
                 return mockResponse;
             }),
             log: logger,
         };
         resPayload = new ResponsePayload();
-        resMessage = "";
+        resMessage = '';
     });
 
     // Clear all mocks after each test
     afterEach(() => {
         jest.clearAllMocks();
 
-        jest.mock("@models/business", () => ({
+        jest.mock('@models/business', () => ({
             create: jest.fn(),
             findByIdAndDelete: jest.fn(),
         }));
 
-        jest.mock("@utils/errorAugmenter", () => ({
+        jest.mock('@utils/errorAugmenter', () => ({
             __esModule: true,
             default: jest.fn(),
         }));
     });
 
     // Define the function name for this test suite
-    const funcName_1 = "newBusiness";
+    const funcName_1 = 'newBusiness';
 
     // Start of test suite for newBusiness function
     describe(`${funcName} -> ${funcName_1} tests`, () => {
@@ -102,6 +115,7 @@ describe(`controller -> ${funcName} tests`, () => {
         // Set up the mock request before each test
         beforeEach(() => {
             mockRequest = {
+                ...mockRequest,
                 body: {
                     businessData: {
                         ...mockNewBusinessData,
@@ -128,6 +142,17 @@ describe(`controller -> ${funcName} tests`, () => {
             // Check if the response status is 201 and the response body is as expected
             expect(mockResponse.status).toBe(201);
             expect(mockResponse.json).toStrictEqual(resPayload);
+
+            // Assert that axios would be called with certain arguments
+            expect(axios.post).toHaveBeenCalledWith(
+                `${process.env.SERVICE_EMAIL_URL}b/new`,
+                {
+                    recipientEmail: mockRequest.userCredentials?.userEmail,
+                    recipientName: mockRequest.userCredentials?.userName,
+                    businessName: mockNewBusinessData.name,
+                },
+            );
+
             // Check if the augmentAndForwardError function was not called
             expect(augmentAndForwardError).not.toHaveBeenCalled();
         });
@@ -159,7 +184,7 @@ describe(`controller -> ${funcName} tests`, () => {
         test(testNames.error, async () => {
             // Mock the business.create function to throw an error
             mockB_Create.mockImplementation(() => {
-                throw new Error("new error");
+                throw new Error('new error');
             });
 
             // Call the newBusiness function
@@ -175,7 +200,7 @@ describe(`controller -> ${funcName} tests`, () => {
     });
 
     // Define the function name for this test suite
-    const funcName_2 = "delBusiness";
+    const funcName_2 = 'delBusiness';
 
     // Start of test suite for delBusiness function
     describe(`${funcName} -> ${funcName_2} tests`, () => {
@@ -185,6 +210,7 @@ describe(`controller -> ${funcName} tests`, () => {
         // Set up the mock request before each test
         beforeEach(() => {
             mockRequest = {
+                ...mockRequest,
                 params: {
                     businessId: mockBusinessId,
                 },
@@ -218,6 +244,16 @@ describe(`controller -> ${funcName} tests`, () => {
             expect(mockResponse.status).toBe(200);
             expect(mockResponse.json).toStrictEqual(resPayload);
 
+            // Assert that axios would be called with certain arguments
+            expect(axios.post).toHaveBeenCalledWith(
+                `${process.env.SERVICE_EMAIL_URL}b/new`,
+                {
+                    recipientEmail: mockRequest.userCredentials?.userEmail,
+                    recipientName: mockRequest.userCredentials?.userName,
+                    businessName: mockNewBusinessData.name,
+                },
+            );
+
             // Check if the augmentAndForwardError function was not called
             expect(augmentAndForwardError).not.toHaveBeenCalled();
         });
@@ -249,7 +285,7 @@ describe(`controller -> ${funcName} tests`, () => {
         test(testNames.error, async () => {
             // Mock the business.findByIdAndDelete function to throw an error
             mockB_FindByIdAndDelete.mockImplementation(() => {
-                throw new Error("new error");
+                throw new Error('new error');
             });
 
             // Call the delBusiness function

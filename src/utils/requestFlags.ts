@@ -4,4 +4,6 @@ export type reqFlags = {
 
 export type reqCredentials = {
     userId?: string;
+    userName?: string;
+    userEmail?: string;
 };

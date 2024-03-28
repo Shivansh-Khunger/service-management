@@ -1,18 +1,18 @@
 // Importing types
-import type { JWT } from "@helpers/createTokens";
-import type { RequestHandler } from "express";
+import type { CustomJwtPayload, JWT } from '@helpers/createTokens';
+import type { RequestHandler } from 'express';
 
 // Importing necessary modules
-import { insertJWT } from "@helpers/createCookie";
-import createToken from "@helpers/createTokens";
-import isRefreshTokenValid from "@helpers/validRefreshToken";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
+import { insertJWT } from '@helpers/createCookie';
+import createToken from '@helpers/createTokens';
+import isRefreshTokenValid from '@helpers/validRefreshToken';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
 
 // Define the function to assign a new refresh token
 export const assignNewRefreshToken: RequestHandler = async (req, res, next) => {
     // Define the function name for logging purposes
-    const funcName = "assignNewRefreshToken";
+    const funcName = 'assignNewRefreshToken';
 
     // Create a new response payload
     const resPayload = new ResponsePayload();
@@ -22,11 +22,16 @@ export const assignNewRefreshToken: RequestHandler = async (req, res, next) => {
 
     try {
         // Validate the refresh token
-        const decode = isRefreshTokenValid(refreshToken);
+        let decode = isRefreshTokenValid(refreshToken);
+        decode = decode as CustomJwtPayload;
 
         // Create a payload for the new refresh token
         const userRefreshTokenPayload: JWT = {
             sub: decode.sub as string,
+            userData: {
+                name: decode.userData.userName,
+                email: decode.userData.userEmail,
+            },
         };
 
         // Create a new refresh token
@@ -38,14 +43,14 @@ export const assignNewRefreshToken: RequestHandler = async (req, res, next) => {
         // Insert the new refresh token into a cookie
         insertJWT({
             res: res,
-            field: "refreshToken",
+            field: 'refreshToken',
             fieldValue: userRefreshToken,
             maxAge: userRefreshCookieMaxAge,
         });
 
         // Define the success message for the response
         const resMessage =
-            "Request to refresh the refresh token is successfull.";
+            'Request to refresh the refresh token is successfull.';
 
         // Set the success message in the response payload
         resPayload.setSuccess(resMessage);
