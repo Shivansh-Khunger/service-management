@@ -29,8 +29,8 @@ export const assignNewRefreshToken: RequestHandler = async (req, res, next) => {
         const userRefreshTokenPayload: JWT = {
             sub: decode.sub as string,
             userData: {
-                name: decode.userData.name,
-                email: decode.userData.email,
+                name: decode.userData.userName,
+                email: decode.userData.userEmail,
             },
         };
 
