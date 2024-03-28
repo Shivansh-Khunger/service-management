@@ -1,90 +1,96 @@
 // Import Types
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 // Import function(s) to be tested
-import { delUser, newUser } from "@controllers/public/user";
+import { delUser, newUser } from '@controllers/public/user';
 
 // Import necessary modules
-import { ifUserExistsByEmail } from "@helpers/models/userExists";
-import { logger } from "@logger";
-import Business from "@models/business";
-import Product from "@models/product";
-import User from "@models/user";
-import CustomError from "@utils/customError";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
-import { ObjectId } from "mongodb";
-import { generateNameforPrimitive } from "../../testNameGenerator";
+import { ifUserExistsByEmail } from '@helpers/models/userExists';
+import { logger } from '@logger';
+import Business from '@models/business';
+import Product from '@models/product';
+import User from '@models/user';
+import CustomError from '@utils/customError';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
+import { ObjectId } from 'mongodb';
+import { generateNameforPrimitive } from '../../testNameGenerator';
 
 // Mock the createCookie helper function
-jest.mock("@helpers/createCookie", () => ({
+jest.mock('@helpers/createCookie', () => ({
     insertJWT: jest.fn(),
 }));
 
 // Mock the createTokens helper function to return a mock token
-jest.mock("@helpers/createTokens", () => ({
+jest.mock('@helpers/createTokens', () => ({
     __esModule: true,
-    default: jest.fn().mockReturnValue("mockToken"),
+    default: jest.fn().mockReturnValue('mockToken'),
 }));
 
 // Mock the hashPassword helper function to return a mock hashed password
-jest.mock("@helpers/hashPassword", () => ({
+jest.mock('@helpers/hashPassword', () => ({
     __esModule: true,
-    default: jest.fn().mockReturnValue("mockHashedPassword"),
+    default: jest.fn().mockReturnValue('mockHashedPassword'),
 }));
 
 // Mock the ifUserExistsByEmail helper function
-jest.mock("@helpers/models/userExists", () => ({
+jest.mock('@helpers/models/userExists', () => ({
     ifUserExistsByEmail: jest.fn(),
 }));
 
 // Mock the deleteMany function of the Business model
-jest.mock("@models/business", () => ({
+jest.mock('@models/business', () => ({
     deleteMany: jest.fn(),
 }));
 
 // Mock the deleteMany function of the Product model
-jest.mock("@models/product", () => ({
+jest.mock('@models/product', () => ({
     deleteMany: jest.fn(),
 }));
 
 // Mock the updateOne, findByIdAndDelete, and create functions of the User model
-jest.mock("@models/user", () => ({
+jest.mock('@models/user', () => ({
     updateOne: jest.fn(),
     findByIdAndDelete: jest.fn(),
     create: jest.fn(),
 }));
 
 // Mock the errorAugmenter utility function
-jest.mock("@utils/errorAugmenter", () => ({
+jest.mock('@utils/errorAugmenter', () => ({
     __esModule: true,
     default: jest.fn(),
 }));
 
 // Mock the referalGenerator utility function to return a mock referral code
-jest.mock("@utils/referalGenerator", () => ({
+jest.mock('@utils/referalGenerator', () => ({
     __esModule: true,
-    default: jest.fn().mockReturnValue("mockReferalCode"),
+    default: jest.fn().mockReturnValue('mockReferalCode'),
+}));
+
+// Mock the axios module to replace the 'post' method with a jest mock function
+jest.mock('axios', () => ({
+    post: jest.fn(),
 }));
 
 // Define mock data for a new user
 const mockNewUserData = {
-    name: "RahulUser",
-    email: "rahul@example.com",
-    phoneNumber: "2234567890",
-    password: "blabla",
-    referalCode: "referalCode",
-    countryCode: "IN",
-    pushToken: "pushToken",
-    profilePic: "profilePicUrl",
-    imeiNumber: "imeiNumber",
+    name: 'RahulUser',
+    email: 'rahul@example.com',
+    phoneNumber: '2234567890',
+    password: 'blabla',
+    referalCode: 'referalCode',
+    countryCode: 'IN',
+    pushToken: 'pushToken',
+    profilePic: 'profilePicUrl',
+    imeiNumber: 'imeiNumber',
     geoLocation: [40.730776, -74.005974],
-    interestArray: ["65fffee82adf14a93a9c0626"],
+    interestArray: ['65fffee82adf14a93a9c0626'],
 };
 
 // Define the name of the collection and the function being tested
-const collectionName = "User";
-const funcName = "userPrimitiveOps";
+const collectionName = 'User';
+const funcName = 'userPrimitiveOps';
 
 // Generate names for the tests
 const testNames = generateNameforPrimitive(collectionName);
@@ -105,18 +111,18 @@ describe(`controller -> ${funcName} tests`, () => {
     beforeEach(() => {
         mockRequest = {};
         mockResponse = {
-            status: jest.fn().mockImplementation((statusCode) => {
+            status: jest.fn().mockImplementation(statusCode => {
                 mockResponse.status = statusCode;
                 return mockResponse;
             }),
-            json: jest.fn().mockImplementation((resPayload) => {
+            json: jest.fn().mockImplementation(resPayload => {
                 mockResponse.json = resPayload;
                 return mockResponse;
             }),
             log: logger,
         };
         mockResPayload = new ResponsePayload();
-        mockResMessage = "";
+        mockResMessage = '';
     });
 
     // After each test, clear all mocks
@@ -125,7 +131,7 @@ describe(`controller -> ${funcName} tests`, () => {
     });
 
     // Define the name of the function being tested
-    const funcName_1 = "newUser";
+    const funcName_1 = 'newUser';
 
     // Begin a test suite for the newUser function
     describe(`${funcName} -> ${funcName_1} tests`, () => {
@@ -135,8 +141,13 @@ describe(`controller -> ${funcName} tests`, () => {
                 body: {
                     userData: {
                         ...mockNewUserData,
-                        referalCode: "",
+                        referalCode: '',
                     },
+                },
+                userCredentials: {
+                    userId: mockUserId.toString(),
+                    userName: 'mockName',
+                    userEmail: 'mockEmail',
                 },
             };
         });
@@ -146,7 +157,7 @@ describe(`controller -> ${funcName} tests`, () => {
         const mockU_Create = User.create as jest.Mock;
 
         // Test the case where the User does not exist
-        describe("if User is non-existent", () => {
+        describe('if User is non-existent', () => {
             // Before each test in this describe block, set the mockIfUserExistsByEmail function to return false
             beforeEach(() => {
                 mockIfUserExistsByEmail.mockResolvedValue(false);
@@ -155,7 +166,7 @@ describe(`controller -> ${funcName} tests`, () => {
             // Test the successful creation of a new user with a non-empty referral code
             test(`${testNames.newDoc.success} with non-empty referal code`, async () => {
                 // Set the referral code in the mock request
-                mockRequest.body.userData.referalCode = "mockReferalCode";
+                mockRequest.body.userData.referalCode = 'mockReferalCode';
 
                 // Mock the User.create function to return a new user
                 mockU_Create.mockResolvedValue({
@@ -180,7 +191,7 @@ describe(`controller -> ${funcName} tests`, () => {
                 // Assert that the User.updateOne function was called with the correct arguments
                 expect(User.updateOne).toHaveBeenCalledWith(
                     {
-                        referalCode: "mockReferalCode",
+                        referalCode: 'mockReferalCode',
                     },
                     { $inc: { bounty: 1 } },
                 );
@@ -188,6 +199,15 @@ describe(`controller -> ${funcName} tests`, () => {
                 // Assert that the response status and body are as expected
                 expect(mockResponse.status).toBe(201);
                 expect(mockResponse.json).toStrictEqual(mockResPayload);
+
+                // Assert that axios would be called with certain arguments
+                expect(axios.post).toHaveBeenCalledWith(
+                    `${process.env.SERVICE_EMAIL_URL}welcome`,
+                    {
+                        recipientEmail: mockNewUserData.email,
+                        recipientName: mockNewUserData.name,
+                    },
+                );
 
                 // Assert that the error handling function was not called
                 expect(augmentAndForwardError).not.toHaveBeenCalled();
@@ -218,6 +238,15 @@ describe(`controller -> ${funcName} tests`, () => {
                 // Assert that the response status and body are as expected
                 expect(mockResponse.status).toBe(201);
                 expect(mockResponse.json).toStrictEqual(mockResPayload);
+
+                // Assert that axios would be called with certain arguments
+                expect(axios.post).toHaveBeenCalledWith(
+                    `${process.env.SERVICE_EMAIL_URL}welcome`,
+                    {
+                        recipientEmail: mockNewUserData.email,
+                        recipientName: mockNewUserData.name,
+                    },
+                );
 
                 // Assert that the error handling function was not called
                 expect(augmentAndForwardError).not.toHaveBeenCalled();
@@ -299,7 +328,7 @@ describe(`controller -> ${funcName} tests`, () => {
     });
 
     // Define the name of the function being tested
-    const funcName_2 = "delUser";
+    const funcName_2 = 'delUser';
 
     // Begin a test suite for the delUser function
     describe(`${funcName} -> ${funcName_2} tests`, () => {

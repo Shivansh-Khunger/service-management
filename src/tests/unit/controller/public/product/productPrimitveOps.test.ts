@@ -1,62 +1,76 @@
 // Import Types
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 // Import function(s) to be tested
-import { delProduct, newProduct } from "@controllers/public/product";
+import { delProduct, newProduct } from '@controllers/public/product';
 
 // Import necessary modules
-import { logger } from "@logger";
-import product from "@models/product";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
-import { ObjectId } from "mongodb";
-import { generateNameforPrimitive } from "../../testNameGenerator";
+import { logger } from '@logger';
+import Business from '@models/business';
+import product from '@models/product';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
+import { ObjectId } from 'mongodb';
+import { generateNameforPrimitive } from '../../testNameGenerator';
 
 // Define a mock product data object
 const mockNewProductData = {
-    name: "Product Name",
-    brandName: "Brand Name",
-    description: "Product Description",
+    name: 'Product Name',
+    brandName: 'Brand Name',
+    description: 'Product Description',
     openingStock: 100,
-    stockType: "Stock Type",
+    stockType: 'Stock Type',
     unitMrp: 100.0,
     sellingPrice: 90.0,
-    batchNo: "Batch123",
-    manufacturingDate: "2022-01-01",
-    expiryDate: "2023-01-01",
+    batchNo: 'Batch123',
+    manufacturingDate: '2022-01-01',
+    expiryDate: '2023-01-01',
     attributes: [
-        { name: "color", value: "red" },
-        { name: "size", value: "large" },
+        { name: 'color', value: 'red' },
+        { name: 'size', value: 'large' },
     ],
     images: [
-        "https://example.com/image1.jpg",
-        "https://example.com/image2.jpg",
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
     ],
-    businessId: "65e221fbd9f5432ff59d3ddd",
-    userId: "65e221dad9f5432ff59d3ddb",
-    countryCode: "IN",
+    businessId: '65e221fbd9f5432ff59d3ddd',
+    userId: '65e221dad9f5432ff59d3ddb',
+    countryCode: 'IN',
 };
 
+// Mock the 'findById' functions from the 'business' model
+jest.mock('@models/business', () => ({
+    findById: jest
+        .fn()
+        .mockResolvedValue({ _id: 'mockId', name: 'mockBusinessName' }),
+}));
+
 // Mock the 'create' and 'findByIdAndDelete' functions from the 'product' model
-jest.mock("@models/product", () => ({
+jest.mock('@models/product', () => ({
     create: jest.fn(),
     findByIdAndDelete: jest.fn(),
 }));
 
 // Mock the 'errorAugmenter' utility function
-jest.mock("@utils/errorAugmenter", () => ({
+jest.mock('@utils/errorAugmenter', () => ({
     __esModule: true, // This is necessary when mocking ES6 modules
     default: jest.fn(),
 }));
 
+// Mock the axios module to replace the 'post' method with a jest mock function
+jest.mock('axios', () => ({
+    post: jest.fn(),
+}));
+
 // Define the name of the collection being tested
-const collectionName = "Product";
+const collectionName = 'Product';
 
 // Generate test names for the product management operations
 const testNames = generateNameforPrimitive(collectionName);
 
 // Define the name of the function being tested
-const funcName = "productPrimitiveOps";
+const funcName = 'productPrimitiveOps';
 
 // Begin a test suite for the product management operations
 describe(`controller -> ${funcName} tests`, () => {
@@ -71,41 +85,48 @@ describe(`controller -> ${funcName} tests`, () => {
     let resPayload: ResponsePayload;
     let resMessage: string;
 
+    const mockUserId = new ObjectId();
     // Before each test, set up the mock request and response and reset the response payload and message
     beforeEach(() => {
-        mockRequest = {};
+        mockRequest = {
+            userCredentials: {
+                userId: mockUserId.toString(),
+                userName: 'mockName',
+                userEmail: 'mockEmail',
+            },
+        };
         mockResponse = {
-            status: jest.fn().mockImplementation((statusCode) => {
+            status: jest.fn().mockImplementation(statusCode => {
                 mockResponse.status = statusCode;
                 return mockResponse;
             }),
-            json: jest.fn().mockImplementation((resPayload) => {
+            json: jest.fn().mockImplementation(resPayload => {
                 mockResponse.json = resPayload;
                 return mockResponse;
             }),
             log: logger,
         };
         resPayload = new ResponsePayload();
-        resMessage = "";
+        resMessage = '';
     });
 
     // After each test, clear all mocks and reset the product model and error augmenter mocks
     afterEach(() => {
         jest.clearAllMocks();
 
-        jest.mock("@models/product", () => ({
+        jest.mock('@models/product', () => ({
             create: jest.fn(),
             findByIdAndDelete: jest.fn(),
         }));
 
-        jest.mock("@utils/errorAugmenter", () => ({
+        jest.mock('@utils/errorAugmenter', () => ({
             __esModule: true,
             default: jest.fn(),
         }));
     });
 
     // Define the name of the function being tested
-    const funcName_1 = "newProduct";
+    const funcName_1 = 'newProduct';
 
     // Begin a test suite for the newProduct function
     describe(`${funcName} -> ${funcName_1} tests`, () => {
@@ -115,6 +136,7 @@ describe(`controller -> ${funcName} tests`, () => {
         // Before each test, set up the mock request object
         beforeEach(() => {
             mockRequest = {
+                ...mockRequest,
                 body: {
                     productData: {
                         ...mockNewProductData,
@@ -142,6 +164,18 @@ describe(`controller -> ${funcName} tests`, () => {
             // Check that the response status and body are as expected
             expect(mockResponse.status).toBe(201);
             expect(mockResponse.json).toStrictEqual(resPayload);
+
+            // Assert that axios would be called with certain arguments
+            expect(axios.post).toHaveBeenCalledWith(
+                `${process.env.SERVICE_EMAIL_URL}p/new`,
+                {
+                    recipientEmail: mockRequest.userCredentials?.userEmail,
+                    recipientName: mockRequest.userCredentials?.userName,
+                    businessName: 'mockBusinessName',
+                    productName: mockNewProductData.name,
+                },
+            );
+
             // Check that the error handling function was not called
             expect(augmentAndForwardError).not.toHaveBeenCalled();
         });
@@ -173,7 +207,7 @@ describe(`controller -> ${funcName} tests`, () => {
         test(testNames.error, async () => {
             // Mock the 'create' function to throw an error
             mockP_Create.mockImplementation(() => {
-                throw new Error("new error");
+                throw new Error('new error');
             });
 
             // Call the newProduct function with the mock request and response
@@ -189,7 +223,7 @@ describe(`controller -> ${funcName} tests`, () => {
     });
 
     // Define the name of the function being tested
-    const funcName_2 = "delProduct";
+    const funcName_2 = 'delProduct';
 
     // Begin a test suite for the delProduct function
     describe(`${funcName} -> ${funcName_2} tests`, () => {
@@ -199,6 +233,7 @@ describe(`controller -> ${funcName} tests`, () => {
         // Before each test, set up the mock request object
         beforeEach(() => {
             mockRequest = {
+                ...mockRequest,
                 params: {
                     productId: mockProductId,
                 },
@@ -233,6 +268,18 @@ describe(`controller -> ${funcName} tests`, () => {
             // Check that the response status and body are as expected
             expect(mockResponse.status).toBe(200);
             expect(mockResponse.json).toStrictEqual(resPayload);
+
+            // Assert that axios would be called with certain arguments
+            expect(axios.post).toHaveBeenCalledWith(
+                `${process.env.SERVICE_EMAIL_URL}p/delete`,
+                {
+                    recipientEmail: mockRequest.userCredentials?.userEmail,
+                    recipientName: mockRequest.userCredentials?.userName,
+                    businessName: 'mockBusinessName',
+                    productName: mockNewProductData.name,
+                },
+            );
+
             // Check that the error handling function was not called
             expect(augmentAndForwardError).not.toHaveBeenCalled();
         });
@@ -264,7 +311,7 @@ describe(`controller -> ${funcName} tests`, () => {
         test(testNames.error, async () => {
             // Mock the 'findByIdAndDelete' function to throw an error
             mockP_FindByIdAndDelete.mockImplementation(() => {
-                throw new Error("new error");
+                throw new Error('new error');
             });
 
             // Call the delProduct function with the mock request and response

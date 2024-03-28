@@ -1,47 +1,47 @@
 // Import types
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 // Import function to be tested
-import checkForAccessToken from "@middlewares/accessTokenCheck";
+import checkForAccessToken from '@middlewares/accessTokenCheck';
 
 // Import necessary modules
-import { insertJWT } from "@helpers/createCookie";
-import createToken from "@helpers/createTokens";
-import isRefreshTokenValid from "@helpers/validRefreshToken";
-import CustomError from "@utils/customError";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import jwt from "jsonwebtoken";
+import { insertJWT } from '@helpers/createCookie';
+import createToken from '@helpers/createTokens';
+import isRefreshTokenValid from '@helpers/validRefreshToken';
+import CustomError from '@utils/customError';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import jwt from 'jsonwebtoken';
 
 // Mock the 'jsonwebtoken' module
-jest.mock("jsonwebtoken", () => ({
+jest.mock('jsonwebtoken', () => ({
     verify: jest.fn(),
 }));
 
 // Mock the 'createTokens' helper function
-jest.mock("@helpers/createTokens", () => ({
+jest.mock('@helpers/createTokens', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Mock the 'validRefreshToken' helper function
-jest.mock("@helpers/validRefreshToken", () => ({
+jest.mock('@helpers/validRefreshToken', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Mock the 'errorAugmenter' utility function
-jest.mock("@utils/errorAugmenter", () => ({
+jest.mock('@utils/errorAugmenter', () => ({
     __esModule: true, // Needed when mocking ES6 modules
     default: jest.fn(),
 }));
 
 // Mock the 'createCookie' helper function
-jest.mock("@helpers/createCookie", () => ({
+jest.mock('@helpers/createCookie', () => ({
     insertJWT: jest.fn(),
 }));
 
 // Define the function name for logging purposes
-const funcName = "checkForAccessToken";
+const funcName = 'checkForAccessToken';
 
 // Start a test suite for the middleware function checkForAccessToken
 describe(`middleware -> ${funcName} tests`, () => {
@@ -55,18 +55,22 @@ describe(`middleware -> ${funcName} tests`, () => {
 
     // Define a mock decoded JWT
     const mockJWTDecode = {
-        sub: "userId",
+        sub: 'userId',
+        userData: {
+            userName: 'mockUserName',
+            userEmail: 'mockUserEmail',
+        },
     };
 
     // Before each test, initialize the mock request and response
     beforeEach(() => {
         mockRequest = {
             signedCookies: {
-                accessToken: "mockAccessToken",
-                refreshToken: "mockRefreshToken",
+                accessToken: 'mockAccessToken',
+                refreshToken: 'mockRefreshToken',
             },
             userCredentials: {
-                userId: "",
+                userId: '',
             },
         };
         mockResponse = {
@@ -80,7 +84,7 @@ describe(`middleware -> ${funcName} tests`, () => {
     });
 
     // Test if the function calls the next function when the access token is valid
-    test("if Calls nextFunction when access token is valid ", () => {
+    test('if Calls nextFunction when access token is valid ', () => {
         // Make the 'verify' function return the mock decoded JWT
         mockVerify.mockReturnValue(mockJWTDecode);
 
@@ -92,12 +96,12 @@ describe(`middleware -> ${funcName} tests`, () => {
         );
 
         // Check if the function updated the user credentials and called the next function
-        expect(mockRequest.userCredentials?.userId).toBe("userId");
+        expect(mockRequest.userCredentials?.userId).toBe('userId');
         expect(mockNextFunction).toHaveBeenCalled();
     });
 
     // Start a test suite for the case when the access token is not present
-    describe("if Access token is not present", () => {
+    describe('if Access token is not present', () => {
         // Before each test, ensure that the access token is not present
         beforeEach(() => {
             if (mockRequest.signedCookies?.accessToken) {
@@ -110,11 +114,11 @@ describe(`middleware -> ${funcName} tests`, () => {
         const mockCreateToken = createToken as jest.Mock;
 
         // Test if the function calls the next function when the refresh token is valid
-        test("if Calls nextFunction when refresh token is valid", () => {
+        test('if Calls nextFunction when refresh token is valid', () => {
             // Make the 'isRefreshTokenValid' function return a mock decoded JWT
             mockIsRefreshTokenValid.mockReturnValue(mockJWTDecode);
             // Make the 'createToken' function return a mock JWT
-            mockCreateToken.mockReturnValue("mockJWT");
+            mockCreateToken.mockReturnValue('mockJWT');
 
             // Call the function with the mock request, response, and next function
             checkForAccessToken(
@@ -129,8 +133,8 @@ describe(`middleware -> ${funcName} tests`, () => {
             // Check if the function called 'insertJWT' with the expected parameters
             expect(insertJWT).toHaveBeenCalledWith({
                 res: mockResponse as Response,
-                field: "accessToken",
-                fieldValue: "mockJWT",
+                field: 'accessToken',
+                fieldValue: 'mockJWT',
                 maxAge: userAccessCookieMaxAge,
             });
 
@@ -139,9 +143,9 @@ describe(`middleware -> ${funcName} tests`, () => {
         });
 
         // Test if the function calls 'augmentAndForwardError' when the refresh token is expired or invalid
-        test("if Calls augmentAndForwardError when refresh token is expired or invalid", () => {
+        test('if Calls augmentAndForwardError when refresh token is expired or invalid', () => {
             // Define a mock error
-            const mockErr = new CustomError("mock Error");
+            const mockErr = new CustomError('mock Error');
 
             // Make the 'isRefreshTokenValid' function throw the mock error
             mockIsRefreshTokenValid.mockImplementation(() => {
@@ -169,7 +173,7 @@ describe(`middleware -> ${funcName} tests`, () => {
     });
 
     // Start a test suite for the case when an error is thrown while verifying the access token
-    describe("if Throws error when verifying access token", () => {
+    describe('if Throws error when verifying access token', () => {
         // Declare variables to hold the custom error and the thrown error
         let mockErr: CustomError;
         let mockThrownError: Error;
@@ -181,18 +185,18 @@ describe(`middleware -> ${funcName} tests`, () => {
         });
 
         // Test if the function throws the appropriate error when the token is expired
-        test("if Throws appropriate error when token is expired", () => {
+        test('if Throws appropriate error when token is expired', () => {
             // Make the 'verify' function throw a 'TokenExpiredError'
             mockVerify.mockImplementation(() => {
-                mockThrownError.name = "TokenExpiredError";
+                mockThrownError.name = 'TokenExpiredError';
                 throw mockThrownError;
             });
 
             // Define the expected error
             mockErr.message =
-                "Request could not be authenticated due to expired access token.";
+                'Request could not be authenticated due to expired access token.';
             mockErr.status = 401;
-            mockErr.logMessage = "an expired access token has been received.";
+            mockErr.logMessage = 'an expired access token has been received.';
 
             // Call the function with the mock request, response, and next function
             checkForAccessToken(
@@ -210,18 +214,18 @@ describe(`middleware -> ${funcName} tests`, () => {
         });
 
         // Test if the function throws the appropriate error when the token is invalid
-        test("if Throws appropriate error when token is invalid", () => {
+        test('if Throws appropriate error when token is invalid', () => {
             // Make the 'verify' function throw a 'JsonWebTokenError'
             mockVerify.mockImplementation(() => {
-                mockThrownError.name = "JsonWebTokenError";
+                mockThrownError.name = 'JsonWebTokenError';
                 throw mockThrownError;
             });
 
             // Define the expected error
             mockErr.message =
-                "Request could not be authenticated due to invalid access token.";
+                'Request could not be authenticated due to invalid access token.';
             mockErr.status = 401;
-            mockErr.logMessage = "an invalid access token has been received.";
+            mockErr.logMessage = 'an invalid access token has been received.';
 
             // Call the function with the mock request, response, and next function
             checkForAccessToken(
