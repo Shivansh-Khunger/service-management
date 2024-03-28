@@ -8,8 +8,7 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/vercel/output/"
+            "src": "/(.*)"
         }
     ]
 }
