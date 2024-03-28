@@ -1,26 +1,48 @@
 // Import types
-import type { RequestHandler } from "express";
+import type { RequestHandler } from 'express';
 
 // Import necessary modules
-import Deal from "@models/deal";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
+import Business from '@models/business';
+import Deal from '@models/deal';
+import Product from '@models/product';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
 
 export const newDeal: RequestHandler = async (req, res, next) => {
-    const funcName = "newDeal";
+    const funcName = 'newDeal';
 
     const resPayload = new ResponsePayload();
 
     const { dealData } = req.body;
+    const { userName, userEmail } = req.userCredentials;
 
     try {
         const newDeal = await Deal.create({
             ...dealData,
         });
-        let resMessage = "";
+
+        let resMessage = '';
         const resLogMessage = `-> response for ${funcName} function`;
 
         if (newDeal) {
+            const businessData = await Business.findById(newDeal.businessId, {
+                name: true,
+            });
+
+            const productData = await Product.findById(newDeal.productId, {
+                name: true,
+            });
+
+            axios.post(`${process.env.SERVICE_EMAIL_URL}d/new`, {
+                recipientEmail: userEmail,
+                recipientName: userName,
+                businessName: businessData?.name,
+                productName: productData?.name,
+                dealName: newDeal.name,
+                dealEndDate: newDeal.endDate.toString(),
+            });
+
             // Create a success message
             resMessage = `Request to create deal-: ${newDeal.name} by user -:${newDeal.userId} is successfull.`;
 
@@ -47,7 +69,7 @@ export const newDeal: RequestHandler = async (req, res, next) => {
 };
 
 export const delDeal: RequestHandler = async (req, res, next) => {
-    const funcName = "delDeal";
+    const funcName = 'delDeal';
 
     const resPayload = new ResponsePayload();
 
