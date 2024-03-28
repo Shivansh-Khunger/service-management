@@ -1,23 +1,26 @@
 // Import types
-import type { JWT } from "@helpers/createTokens";
-import type { RequestHandler } from "express";
+import type { JWT } from '@helpers/createTokens';
+import type { RequestHandler } from 'express';
+import type { JwtPayload } from 'jsonwebtoken';
+
 
 // Import necessary modules
-import { insertJWT } from "@helpers/createCookie";
-import createToken from "@helpers/createTokens";
-import hashPassword from "@helpers/hashPassword";
-import { ifUserExistsByEmail } from "@helpers/models/userExists";
-import Business from "@models/business";
-import Product from "@models/product";
-import User from "@models/user";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import generateReferal from "@utils/referalGenerator";
-import ResponsePayload from "@utils/resGenerator";
+import { insertJWT } from '@helpers/createCookie';
+import createToken from '@helpers/createTokens';
+import hashPassword from '@helpers/hashPassword';
+import { ifUserExistsByEmail } from '@helpers/models/userExists';
+import Business from '@models/business';
+import Product from '@models/product';
+import User from '@models/user';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import generateReferal from '@utils/referalGenerator';
+import ResponsePayload from '@utils/resGenerator';
+import axios from 'axios';
 
-const collectionName = "User";
+const collectionName = 'User';
 // Function to creates a new user
 export const newUser: RequestHandler = async (req, res, next) => {
-    const funcName = "newUser";
+    const funcName = 'newUser';
 
     // Create a new response payload
     const resPayload = new ResponsePayload();
@@ -40,7 +43,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
             let referalCode = userData.referalCode;
 
             // If a referral code was provided, increment the bounty of the user who provided the referral code
-            if (referalCode !== "") {
+            if (referalCode !== '') {
                 User.updateOne(
                     {
                         referalCode: referalCode,
@@ -64,9 +67,18 @@ export const newUser: RequestHandler = async (req, res, next) => {
 
             // If the user was created successfully, send a success response
             if (newUser) {
+                axios.post(`${process.env.SERVICE_EMAIL_URL}welcome`, {
+                    recipientEmail: newUser.email,
+                    recipientName: newUser.name,
+                });
+
                 // Create the payload for the access token
                 const userAccessTokenPayload: JWT = {
                     sub: newUser._id.toString(), // The subject of the token is the user's ID
+                    userData: {
+                        name: newUser.name,
+                        email: newUser.email,
+                    },
                 };
 
                 // Create the access token
@@ -81,14 +93,18 @@ export const newUser: RequestHandler = async (req, res, next) => {
                 // Insert the access token into a cookie
                 insertJWT({
                     res: res, // The response object
-                    field: "accessToken", // The name of the cookie
+                    field: 'accessToken', // The name of the cookie
                     fieldValue: userAccessToken, // The value of the cookie
                     maxAge: userAccessCookieMaxAge, // The max age of the cookie
                 });
 
                 // Create a payload for the new refresh token
                 const userRefreshTokenPayload: JWT = {
-                    sub: newUser._id.toString(),
+                    sub: newUser._id.toString(), // The subject of the token is the user's ID
+                    userData: {
+                        name: newUser.name,
+                        email: newUser.email,
+                    },
                 };
 
                 // Create a new refresh token
@@ -103,7 +119,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
                 // Insert the new refresh token into a cookie
                 insertJWT({
                     res: res,
-                    field: "refreshToken",
+                    field: 'refreshToken',
                     fieldValue: userRefreshToken,
                     maxAge: userRefreshCookieMaxAge,
                 });
@@ -139,7 +155,7 @@ export const newUser: RequestHandler = async (req, res, next) => {
 };
 
 export const delUser: RequestHandler = async (req, res, next) => {
-    const funcName = "delUser";
+    const funcName = 'delUser';
 
     const resPayload = new ResponsePayload();
 
