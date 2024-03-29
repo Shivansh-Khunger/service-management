@@ -1,23 +1,23 @@
 // Import types
-import type { JWT } from "@helpers/createTokens";
-import type { RequestHandler } from "express";
-import type { PipelineStage } from "mongoose";
+import type { JWT } from '@helpers/createTokens';
+import type { RequestHandler } from 'express';
+import type { PipelineStage } from 'mongoose';
 
 // Import necessary modules
-import { insertJWT } from "@helpers/createCookie";
-import createToken from "@helpers/createTokens";
-import User from "@models/user";
-import augmentAndForwardError from "@utils/errorAugmenter";
-import ResponsePayload from "@utils/resGenerator";
-import bcrypt from "bcrypt";
+import { insertJWT } from '@helpers/createCookie';
+import createToken from '@helpers/createTokens';
+import User from '@models/user';
+import augmentAndForwardError from '@utils/errorAugmenter';
+import ResponsePayload from '@utils/resGenerator';
+import bcrypt from 'bcrypt';
 
 // Define the collection name
-const collectionName = "User";
+const collectionName = 'User';
 
 // Define the loginUser function, which is an Express.js middleware function
 export const loginUser: RequestHandler = async (req, res, next) => {
     // Define the function name
-    const funcName = "loginUser";
+    const funcName = 'loginUser';
 
     // Create a new instance of the ResponsePayload class
     const resPayload = new ResponsePayload();
@@ -45,19 +45,27 @@ export const loginUser: RequestHandler = async (req, res, next) => {
             {
                 // Perform a left outer join with the businesses collection
                 $lookup: {
-                    from: "businesses",
-                    localField: "_id",
-                    foreignField: "userId",
-                    as: "businesses",
+                    from: 'businesses',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'businesses',
                 },
             },
             {
                 // Perform a left outer join with the products collection
                 $lookup: {
-                    from: "products",
-                    localField: "business._id",
-                    foreignField: "businessId",
-                    as: "businesses.products",
+                    from: 'products',
+                    localField: 'business._id',
+                    foreignField: 'businessId',
+                    as: 'businesses.products',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'deals',
+                    localField: 'business._id',
+                    foreignField: 'businessId',
+                    as: 'business.Deals',
                 },
             },
         ];
@@ -187,7 +195,7 @@ export const loginUser: RequestHandler = async (req, res, next) => {
 
         // Define an error message
         resMessage =
-            "Request to log in user is unsuccessfull due to user being non-existent";
+            'Request to log in user is unsuccessfull due to user being non-existent';
 
         resPayload.setError(resMessage);
 

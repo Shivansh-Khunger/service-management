@@ -1,0 +1,255 @@
+:index-file: ../src/index.ts
+
+[[index-section]]
+== Entry Point
+Let's start with the **entry point** for our API `link:{index-file}[index.ts]`
+
+TIP: I recommend opening `link:{index-file}[index.ts]` in side-by-side view to better understand the things you read from now on...
+
+=== Importing Modules
+First off we import all necessary modules.
+
+Then after that we import routes for specific entities / collections.
+
+Then we use those imported modules to make an express app and add the necessary middleware's.
+
+=== Connecting to the Database
+Then after that we invoke a function which connects to our db. After it has connected to the db it will check if the environment is `development` or `production` if it is development it will try to get the SSL certificates which are required to get `https` on local dev-server's. If the poaching of SSL certificates is unsuccessful the code will come to its local catch block where it will start the API without `https`. 
+
+NOTE: This was done to run `development` environment on the deployed API. For testing purposes sometimes you need that.
+
+If the environment is `production` then the app will just start with a nice message.
+
+=== Setting Up Base Route
+Then you will see a base route being set-up to send a nice message for the base route.
+
+TIP: This is used to ping or check if the service has deployed and is running correctly. Some call this the 'ping' route as well.
+
+=== Versioning
+Then you will see **versionNumber** being set as a variable. This is done for future needs that might require us to have multiple versions of the API. 
+
+=== Using Imported Routes
+After that we use the imported route modules and attach them to our app with each having its own **sub-route**. The sub-routes are simply named and have **sub-route** of their entity's first character. The routes are commented out as private and public for better understanding.
+
+NOTE: You might spotted by now that the deal routes are placed before everyone else and the rate-limiter is only used on the routes after that so this means that the deal routes don't have rate-limiting '_**NO**_' you're wrong as the `getDeals` (a sub route of deal-routes) route has a special rate-limiter due the nature of the route as it is expected to be hit more in a short period of time. Due to this other routes are placed after and are added with the standard rate-limiter.
+
+== Middleware's
+Now let's talk about the middleware's for the API 
+
+TIP: I recommend opening each middleware file linked in side-by-side view to better understand the things you read from now on...
+
+[[docCheck-section]]
+=== Doc Check Middlewares
+You might have seen a pattern in the middleware's they have that 5 of them are for checking if a doc exists in the db or not. I would list them for you they are -: 
+
+* `link:../src/middlewares/businessCheck.ts[businessCheck.ts]`
+* `link:../src/middlewares/productCheck.ts[productCheck.ts]`
+* `link:../src/middlewares/dealCheck.ts[dealCheck.ts]`
+* `link:../src/middlewares/categoryCheck.ts[categoryCheck.ts]`
+* `link:../src/middlewares/subCategoryCheck.ts[subCategoryCheck.ts]`
+
+NOTE: This doc only covers explanation for **one** of them as they are basically **copies** of each other but just check for a different collection in the **db**. So there is no point of explaining each one of them.
+
+Let's take `link:../src/middlewares/businessCheck.ts[businessCheck.ts]` for example
+
+First off we will import types and necessary modules.
+
+Then after that we will define type for options of this middleware. The options are also same across the middleware's listed above and the only difference they have is in the type of `key` attribute which can only be of the particular collection or model defined in xref:STRUCTURE#models-section[`models/`]  directory. 
+
+Then after that we define the function itself with its custom options. 
+
+CAUTION: If you are new to _**express**_ you might get confused by the function as why this is returning a function which should have been the **middleware** itself. You can go and read the end of **link:https://expressjs.com/en/guide/writing-middleware.html[this]**.
+
+In the function itself we define the `collectionName` and `funcName` these are used in literally every function in this API. They are used for logging and debugging purposes. 
+
+Then the logic of middleware is implemented which is that according to the input this middleware can check for a business in any way possible. (I am actually very proud of this particular implementation). This future proofs the function. 
+
+The db querying is actually not implemented here it is done in a helper function which returns a minimal doc or null. Then the received response is `validateDocumentExistence` function which basically evaluates what to do with the response according to the inputs.
+
+`**link:../src/middlewares/helpers/valDocExistence.ts[valDocExistence.ts]**` -:
+
+There can be four conditions based on two things 
+
+-> if the middleware is supposed to pass the request if the document didn't existed before.
+
+-> if the middleware is supposed to pass the request if the document existed before.
+
+Based on these two things the local-helper evaluates the inputs and throws error or calls the `**next()**` function.
+
+NOTE: If an error is thrown during the execution of the function the `**link:../src/utils/errorAugmenter.ts[errorAugmenter()]**` is called which basically does what its name suggests it augments and forwards the error to the
+`**link:../src/middlewares/errorHandler.ts[error handling middleware]**`.
+
+[[validToken-section]]
+=== Valid Token Middlewares
+
+You might have also spotted another pattern in the middleware's they have that 2 of them are for checking if a token is valid or not they are -: 
+
+* `**link:../src/middlewares/accessTokenCheck.ts[accessTokenCheck.ts]**`.
+* `**link:../src/middlewares/refreshTokenCheck.ts[refreshTokenCheck.ts]**`.
+
+These functions are quite similar, but also different at the same time. The access token check function, as the name suggests, check for invalid access token and if it is present in the. The request is sent further and if it doesn't then the then it is checked that if a refresh token, if a valid refresh token exists in the request and if it does Then a newly assigned access token is sent with the request.If the refresh token is also not valid, the request is sent back with the status of 404 and unauthorised.
+
+Let's first talk about the `**link:../src/middlewares/accessTokenCheck.ts[accessTokenCheck.ts]**`. This function starts with assigning the funk name as always, it is done with every function. Then it accesses the access token and replace token from request sign cookies object, which is an object which is allocated by the cookie parts or middleware that was implemented in **<<index-section>>**.
+
+Then it checks if the request user credentials are initiated, and if they are not they are initiated Then the function tries to check if a valid access token exists and if it exists the request is passed and a log is placed And if the access token is not valid or has expired, the refresh token is used if it is valid to assign a new access token and it is sent with the request If, by any chance, both the refresh token and access token are not valid, Then the error is thrown and sent to the error augmented for further sending it to the error handling middleware.
+
+Now, as for `**link:../src/middlewares/refreshTokenCheck.ts[refreshTokenCheck.ts]**`, this function is only different in the situation when there is a invalid refresh token. In that case, the response is straightaway 404 and unauthorised coz there is no other token that could verify This user is a valid user
+
+=== Device Check Middleware ( `link:../src/middlewares/deviceCheck.ts[deviceCheck.ts]` )
+
+This middleware is implemented with the help of _**link:https://www.npmjs.com/package/ua-parser-js[ua-parser-js]**_ library. It simply checks if a request is sent from which device. According to the device evaludated by this library, if the device is a mobile or a tablet the flags object in the request, which has a property checkImei, is set to true.If the request is not sent from mobile or a tablet, then the check emi attribute is set to false. This is done to assure that the checkImei valid, the check imei middleware, is only invoked if a request is sent from a mobile or a tablet.
+
+[[errorHandler-section]]
+=== Centralised Error Handler ( `link:../src/middlewares/errorHandler.ts[errorHandler.ts]` )
+
+This middleware, which is a special middleware which is used to centralise the error handling process It starts by creating a response payload from the response payload class Then it checks the error object for different attributes if they are present, then the values of those attributes are set according to the mentioned in the error object. If they are not present, then a default value is assigned to those variables, like `status`, `message`, `logMessage` after saving these `logMessage` is set to undefined for making the response cleaner. After this, the response payload is called with its `**setError()**` method, which basically sets an error and modifies the rest payload accordingly After that, it basically just returns the request with the status and response payload
+
+== Helper's
+
+NOTE: The following helper's are from its sub-directory `models/`
+
+=== Doc Exists Helpers
+
+You might have seen a pattern in the helper's they have that 5 of them are for checking if a doc exists in the db or not. I would list them for you they are -: 
+
+* `link:../src/helpers/models/businessExists.ts[businessExists.ts]`
+* `link:../src/helpers/models/productExists.ts[productExists.ts]`
+* `link:../src/helpers/models/dealExists.ts[dealExists.ts]`
+* `link:../src/helpers/models/categoryExists.ts[categoryExists.ts]`
+* `link:../src/helpers/models/subCategoryExists.ts[subCategoryExists.ts]`
+
+NOTE: This doc only covers explanation for **one** of them as they are basically **copies** of each other but just check for a different collection in the **db**. So there is no point of explaining each one of them.
+
+Let's take `**link:../src/helpers/models/productExists.ts[productExists.ts]**` for example
+
+The function is defined as `ifProductExists()` and it takes two arguments. One is the next function and one is the criteria to check for which the product or entity exists Then it just simply queries the db with collection' exist method with criteria as input. The returned value by db is retured by the function. If any error is thrown in this process, then the catch block catches it as always `**link:../src/utils/errorAugmenter.ts[errorAugmenter()]**` takes it and gives it to the <<errorHandler-section>>.
+
+[[hashPassword-section]]
+=== Hash Password ( link:../src/helpers/hashPassword.ts[`hashPassword.ts`] )
+
+This function as its name indicates is used to hash passwords which are received from the user It hash cheques if the non hash password is accidentally sent as an empty string, then it will throw an error. If not the function will  hash the string given to it with the library **_link:https://www.npmjs.com/package/bcrypt[bcrypt]_ ** with **13 salt rounds** and then it returns a hashed string.
+
+NOTE: The 13 salt rounds were selected based on the research that how much does the industry uses and it came out to about 10-12. Analysing that we decided to go for the sweet spot 13 rounds which does not impact perfromance and still is a good level of hashing.
+
+=== Valid Refresh Token ( link:../src/helpers/validRefreshToken.ts[`validRefreshToken.ts`] ) 
+
+This function as its name indicates is used to check if a refresh token is valid or not it takes a refresh token as an input and tries to decode it if an error occurs during the decode process, then depending on error message the customError is set accordingly and the error is thrown so that it could be catched by the function that invoked this function.
+
+=== Create Token ( link:../src/helpers/createTokens.ts[`createToken.ts`] ) 
+
+This function as its name indicates is used to create jwt's or tokens. This function uses _**link:https://www.npmjs.com/package/jsonwebtoken[jsonwebtoken]**_ and exports two types, `JWT` and a `CustomJwtPayload` interface, the later is an extension of `JwtPayload` custom type jwt is used for jwt payloads in the application. 
+
+Then `createToken()` is defined with two inputs. One is `payload` and `wantRefresh`, later is of type `_Boolean_`, depending on the value of `wantRefresh` a refresh or an access token is returned from the function
+
+=== Create Cookie ( link:../src/helpers/createCookie.ts[createCookie.ts] ) 
+
+This function as its name indicates is used to create cookies and attach them to the `Response`` object. This function uses _**link:https://www.npmjs.com/package/cookie-parser[cookie-parser
+]**_ from <<index-section>>.
+
+First it defines a type for its options and then after that it defines the function `insertJWT`.
+This function attaches the `jwt` to the `res.cookie` with certain optons.
+
+== Controller's
+
+The controllers can be broadly divided into 4 categories (as of now). I would list them for you they are -:
+
+* `primitiveOps` they include creating a new doc and deleting an existing one.
+* `managementOps` they include updating an existing doc.
+* `getOps` they include for getting a particular doc.
+* `authOps` they include for authenticating a User.
+
+=== Primitive Ops 
+
+let's take the example of `**link:../src/controllers/public/user/userPrimitiveOps.ts[userPrimitiveOps.ts]**`
+
+Every `primitiveOps.ts` includes the following handler's -:
+
+* newDoc which make a new doc in db.
+* delDoc which delete a doc in db.
+
+==== New Doc
+
+-> used example -:`**newUser()**`
+
+This function starts by intialising a response payload and getting the `userData` from request body.
+
+Then it checks if a user with the same email or phone number with `ifUserExistsByEmail()` which is provided in the request exists or not. If the user does not then the referal code from the `userData` is taken. The controller checks if the referal code is empty if it is not then the User whose refral code was provided get's an increase in its bounty.
+
+If the refral code is empty then the controller skips the increament operation and just creates a referal code for the new user itself by using `generateReferal()`. (A referal code for the user will be created in both cases)
+
+Then the password that was provided by the user is a plain string which is hashed to be stored in the db with <<hashPassword-section>>. Then the user is created with the `.create()` from _mongoose_.
+
+If the user is successfully created then an _axios_ POST request is initialised to **service-email** of **iJUJU** for sending a welcome email to the user. Then a pair of access and refresh token is created and cookie's are made for them respectively. Then the appropiate response messages and data is sent with the code 201.
+
+NOTE: The axios request mentioned above should be async and not be awaited for. The reason is that the **_service-email_** is a Cloudflare worker and is very slow. The service is heavily tested and it is a very simple one. Maybe in future we could implement messaging queues but as of now due to the reasons mentioned it should be async.
+
+If the user creation is **unsucessfull** then an appropiate response message are set and the resopnse is sent with the code 409.
+
+If the user **already exists** in the db then also an appropiate response message are set and the resopnse is sent with the code 409.
+
+If any **unexpected error** occures during the execution of this controller then the catch block will catch it and pass to `augmentAndForwardError()`
+
+==== Delete Doc
+
+-> used example -:`**delUser()**`
+
+This function starts by intialising a response payload and getting the `userId` from request credentials (This is a custom object which is populated by the `accessTokenCheck.ts` in <<validToken-section>>).
+
+Then the function calls the `.delete()` method of _mongoose_ and waits for the db's response. If the response if truthy and the reurned doc matches the id we have. Then two async `.deleteMany()` method of _mongoose_ are called but for the `Business` & `Product` collections. 
+This is done to delte any **lingering** `Business` & `Product` documnets which were owned by the user which is being deleted. Then the appropiate messages are set and the response is send with code 200.
+
+NOTE: The two `.deleteMany()` calls should be async for the sake of performance.
+
+NOTE: You might be wondering we called the `.deleteMany()` on every collection in the herirachy but not deals this is beacuse a link:../src/jobs/delExpDealJob.ts[cron-job] has been defined for it and it removes expired deals and due to the fact that the way of getting to `Deals` is through `Business` so a **defaulter** Deal would never be shown to the User.
+
+If the returned doc is **not truthy or its id did not matched** what we have then also appropiate messages are set and response is sent with status 401.
+
+If any **unexpected error** occures during the execution of this controller then the catch block will catch it and pass to `augmentAndForwardError()`
+
+=== Management Ops
+
+let's take the example of `**link:../src/controllers/public/product/productManagementOps.ts[productManagementOps.ts]**`
+
+This function also starts by intitailising `funcName`, making a reponse payload and extracts `latestProduct` from request body and `productId` from request params. The middleware from <<docCheck-section>> ensures that the product exists befrre we are updating it.
+
+After that the controller tries to update the doc by calling `.findByIdAndUpdate()` by _mongoose_ with the `latestProduct`. If the updation is truthy appropiate messages are set and the reponse is sent with code 200.
+
+If the updation is not truthy then also appropiate messages are set and the reponse is sent with code 409.
+
+If any **unexpected error** occures during the execution of this controller then the catch block will catch it and pass to `augmentAndForwardError()`
+
+=== Get Ops
+
+let's take the example of `**link:../src/controllers/public/deals/getDeals.ts[getDeals.ts]**`
+
+This function also starts by intialsising `funcName`, response payload and extracts `userId` from `request.userCredentials` and `userData` from `reques.body`.
+
+After this the controller qurie's the db with `.findById` of _mongoose_ to get the user's intrest array which stores the preffered interests of user.
+
+If the poaching of interest array is successfull then a _Mongo DB_ pipleline is defined acc to which the business in the radius of user's preffered distance (in KM) will be extracted and then the deals under the business will be extracted and the product for which the deal was given would be extracted. 
+
+This becomes the deals array and is called by `.aggregate()` of _mongoose_ if the deals is truthy then appropiate messages are set and response is send with code 200.
+
+If the deals is not **truthy** then also appropiate messages are set and the response is send with code 409.
+
+If the **poaching of interest array is falsy** then also appropiate messages are set and the response is send with code 409.
+
+If any **unexpected error** occures during the execution of this controller then the catch block will catch it and pass to `augmentAndForwardError()`
+
+
+=== Auth Ops
+
+let's take the example of `**link:../src/controllers/public/user/userAuthOps.ts[userAuthOps.ts]**`
+
+This function also starts by intialsising `funcName`, response payload and extracts `userId` from `request.userCredentials`. After that a pipeline is initiated is that matches the user with its email or phone Number and gets all the details about its business and products and Deals.
+
+Then after that it retrives the user's hashed password from db and compares it. If the user is aurthorised then the pipline is queried with db and a new pair of access & refresh token is assigned. Then appropiate messages are set and the response is sent with code 200.
+
+If the password did not match then also appropiate messages are set and the request is sent with code 401.
+
+If the password of user could not be retrieved then also appropiate messages are set and the request is sent with code 404.
+
+If any **unexpected error** occures during the execution of this controller then the catch block will catch it and pass to `augmentAndForwardError()`
+
+
+NOTE: The aspects not covered in this document are likely easily understandable. However, if you encounter any difficulties or have questions, feel free to raise an issue request.

@@ -8,37 +8,48 @@ This document provides a brief description of each dependency in the `package.js
 === `@dotenvx/dotenvx`
 This package is used to load environment variables from a `.env` file into `process.env`.
 
+=== `axios`
+This package is used to make HTTP requests from node.js or XMLHttpRequests from the browser.
+
 === `bcrypt`
 This package is used for hashing passwords.
 
-==== User For 
+==== Used For 
 This package is used in `helpers/hashPassword`.
+
+=== `cookie-parser`
+This package is used to parse Cookie header and populate `req.cookies` with an object keyed by the cookie names.
 
 === `express`
 This package is a fast, unopinionated, and minimalist web framework for Node.js.
 
+=== `express-rate-limit`
+This package is used to rate limit repeated requests to public APIs and/or endpoints such as password reset.
+
 === `joi`
 This package is used for input-validation.
 
-==== User For
+==== Used For
 `JOI` Schema's are defined in dir xref:{structure}#validation-section[`validation/`].
+
+=== `jsonwebtoken`
+This package is used to generate, sign, and verify JWTs.
+
+=== `mongodb`
+This package is a MongoDB driver for Node.js.
 
 === `mongoose`
 This package is a MongoDB object modeling tool designed to work in an asynchronous environment.
 
-==== User For
+==== Used For
 `Mongoose` Schema's for each entity / collection is defined in dir xref:{structure}#models-section[`models/`].
 
 === `nanoid`
 This package is a tiny, secure, URL-friendly, unique string ID generator for JavaScript.
 
-==== User For 
-This package is used to generate referals in the project.
+==== Used For 
+This package is used to generate referrals in the project.
 
-=== `nodemon`
-This package is a utility that will monitor for any changes in your source and automatically restart your server.
-
-[[pino-section]]
 === `pino`
 This package is a very low overhead Node.js logger.
 
@@ -52,25 +63,58 @@ This package is a pretty printer for Pino logs.
 `pino`, `pino-http`, `pino-pretty` collectively are used for logging in the project. They are implemented in the xref:{structure}#logger.ts-section[`logger.ts`] at the root of the project.
 ****
 
-=== `typescript`
-This package is a typed superset of JavaScript that compiles to plain JavaScript.
-
 === `ua-parser-js`
 This package is a user-agent string parser.
+
+=== `typescript`
+This package is a typed superset of JavaScript that compiles to plain JavaScript.
 
 == Dev Dependencies
 
 === `@biomejs/biome`
 This package is a lightweight, flexible, and scalable Node.js server framework.
 
+=== `@jest/globals`
+This package provides Jest global variables for TypeScript.
+
 === `@types/bcrypt`
 This package provides TypeScript definitions for `bcrypt`.
 
+=== `@types/cookie-parser`
+This package provides TypeScript definitions for `cookie-parser`.
+
 === `@types/express`
 This package provides TypeScript definitions for `express`.
+
+=== `@types/jest`
+This package provides TypeScript definitions for Jest.
+
+=== `@types/jsonwebtoken`
+This package provides TypeScript definitions for `jsonwebtoken`.
 
 === `@types/node`
 This package provides TypeScript definitions for Node.js.
 
 === `@types/ua-parser-js`
 This package provides TypeScript definitions for `ua-parser-js`.
+
+=== `jest`
+This package is a delightful JavaScript Testing Framework with a focus on simplicity.
+
+=== `mongodb-memory-server`
+This package spins up a real MongoDB Server programmatically from node for testing or mocking during development.
+
+=== `supertest`
+This package provides a high-level abstraction for testing HTTP.
+
+=== `ts-jest`
+This package is a TypeScript preprocessor with source map support for Jest.
+
+=== `ts-patch`
+This package provides TypeScript language service plugin for module resolution.
+
+=== `tsx`
+This package is a task runner / simpler Make alternative for TypeScript.
+
+=== `typescript-transform-paths`
+This package transforms absolute paths to relative paths.

@@ -6,31 +6,37 @@
 .
 ├── .github/
 ├── .vscode/
-├── config/
-├── controllers/
-│   ├── private/
-        ├── entity/
-│   └── public/
-        ├── entity/
 ├── docs/
-├── helpers/
-│   ├── models/
-├── middlewares/
+├── src/
+    ├── config/
+    ├── controllers/
+        ├── private/
+            ├── entity/
+        └── public/
+            ├── entity/
+    ├── jobs/    
+    ├── middlewares/
+        └── helpers/    
+    ├── models/
+    ├── routes/
+    ├── services/
+    ├── tests/
+    ├── utils/
+    ├── validation/
+        ├── entity/
     ├── helpers/
-├── models/
-├── routes/
+        └── models/
+    ├── index.ts
+    └── logger.ts
 ├── types/
-├── utils/
-├── validation/
-    ├── entity/
+├── .dockerignore
 ├── .editorconfig
 ├── .gitignore
 ├── .prettierrc
 ├── biome.json
 ├── CONTRIBUTING.adoc
-├── index.ts
+├── Dockerfile
 ├── LICENSE.adoc
-├── logger.ts
 ├── package.json
 ├── README.adoc
 └── tsconfig.json
@@ -43,32 +49,39 @@ This directory contains templates for issues and pull requests.
 == `.vscode/`
 This directory contains configuration and extension recommendation files for Visual Studio Code.
 
-== `config/`
+== `docs/`
+This directory contains documentation files for the project.
+
+== `src/`
+This directory contains the source code of the application.
+
+=== `config/`
 This directory contains configuration files for the project, such as `db.ts` for database configuration.
 
 [[controllers-section]]
-== `controllers/`
+=== `controllers/`
 This directory contains the logic for handling requests to the application. It's divided into `private/` and `public/` subdirectories.
 
 [[private-section]]
-=== `private/`
+==== `private/`
 This subdirectory contains controllers that require authentication and are intended to be accessed by either dev's or sister services of the project.
 
 [[public-section]]
-=== `public/`
+==== `public/`
 This subdirectory contains controllers that are intended to be accessed by the end user client.
 
 They each contain subdirectories for each entity / collection of the application, and each entity directory contains various controllers for the entity.
 
-== `docs/`
-This directory contains documentation files for the project.
-
 [[helpers-section]]
-== `helpers/`
+=== `helpers/`
 This directory contains helper functions that are used throughout the project.
 
+[[jobs-section]]
+=== `jobs/`
+This directory contains background jobs that are run independently of user requests.
+
 [[middlewares-section]]
-== `middlewares/`
+=== `middlewares/`
 This directory contains middleware functions that process incoming requests before they reach the controllers.
 
 ****
@@ -76,30 +89,41 @@ Remember the philosophy that the controller should only implement the **business
 ****
 
 [[models-section]]
-== `models/`
+=== `models/`
 This directory contains the **`mongoose` schema** for each entity / collection for the project.
 
-== `routes/`
+[[routes-section]]
+=== `routes/`
 This directory contains the route definitions for the application.
 
 TIP: This is also divided into `private/` and `public/` just like <<controllers-section>> subdirectories with each having the corresponding routes.
 
-== `types/`
-This directory contains custom type definitions for the project.
+[[services-section]]
+=== `services/`
+This directory contains services that encapsulate some business logic, often used by controllers or other services.
+
+[[tests-section]]
+=== `tests/`
+This directory contains test files for the application.
+
+TIP: This has the same structure as the src folder itself.w
 
 [[utils-section]]
-== `utils/`
+=== `utils/`
 This directory contains utility functions that are used throughout the project.
 
 [[difference-between-helpers-and-utils-section]]
 CAUTION: The difference between `helpers/` and `utils/` is that the `helpers/` are functions that are used in the business logic of the application, while the `utils/` are functions that are used in the infrastructure of the application.
 
 [[validation-section]]
-== `validation/`
+=== `validation/`
 This directory contains sub-directory for each entity which includes input-validation schema files, made with **`JOI`**.
 
 TIP:
 The structure is similar to <<controllers-section>> except this is not divided into <<private-section>> and <<public-section>> subdirectories.
+
+== `types/`
+This directory contains custom type definitions for the project.
 
 == `dist/`
 This directory contains the compiled JavaScript files from the TypeScript source code.
