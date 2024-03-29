@@ -1,6 +1,6 @@
 {
     "name": "service-management",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "this is the service management service for iJUJU.",
     "main": "index.js",
     "scripts": {
