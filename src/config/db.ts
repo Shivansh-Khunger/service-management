@@ -1,8 +1,8 @@
 // Import the logger module
-import { logger } from "@logger";
+import { logger } from '@logger';
 
 // Import the mongoose module, which is used to interact with MongoDB
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // Define an asynchronous function to connect to the MongoDB database
 async function connectToDb() {
@@ -11,16 +11,16 @@ async function connectToDb() {
     await mongoose
         .connect(process.env.MONGO_URI as string)
         .then(() => {
-            logger.info("db connected !");
+            logger.info('db connected !');
         })
-        .catch((err) => {
+        .catch(err => {
             // If an error occurs while trying to connect to the database, log the error and a message indicating that the connection failed
             logger.error(
                 err,
-                "-> an error has occured while connecting to the db!",
+                '-> an error has occured while connecting to the db!',
             );
 
-            logger.info("-> server is closing.");
+            logger.fatal('server is closing... (＞︿＜)');
             process.exit(1);
         });
 }
