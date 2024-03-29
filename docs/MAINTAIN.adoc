@@ -80,12 +80,12 @@ NOTE: Export the function as default only when there is no other function to be 
 ==== **Example**
 
 ===== **Private Controller**
-See the example primitive controllers in link:../controllers/private/category/categoryPrimitiveOps.ts[this file].
+See the example primitive controllers in link:../src/controllers/private/category/categoryPrimitiveOps.ts[this file].
 
 ===== **Public Controller**
-See the example get controller in link:../controllers/public/deal/getDeals.ts[this file].
+See the example get controller in link:../src/controllers/public/deal/getDeals.ts[this file].
 
-See the example primitive controllers in link:../controllers/public/product/productPrimitiveOps.ts[this file].
+See the example primitive controllers in link:../src/controllers/public/product/productPrimitiveOps.ts[this file].
 
 === **_New Middleware Creation_**
 
@@ -99,7 +99,7 @@ When creating a new **middleware**, the following steps should be followed:
 
 ==== Example
 
-See the example middleware in link:../middlewares/businessCheck.ts[this file].
+See the example middleware in link:../src/middlewares/businessCheck.ts[this file].
 
 ==== **_New Helper Creation_**
 
@@ -113,9 +113,9 @@ When creating a new **helper** function, the following steps should be followed:
 
 ==== **Example**
 
-See the example helper function that was specifically made for an entity in link:../helpers/models/businessExists.ts[this file].
+See the example helper function that was specifically made for an entity in link:../src/helpers/models/businessExists.ts[this file].
 
-See the example helper function in link:../helpers/hashPassword.ts[this file].
+See the example helper function in link:../src/helpers/hashPassword.ts[this file].
 
 === **_New Utility Creation_**
 
@@ -132,7 +132,7 @@ When creating a new **utility** function, the following steps should be followed
 
 ==== **Example**
 
-See the example utility function in link:../utils/errorAugmenter.ts[this file].
+See the example utility function in link:../src/utils/errorAugmenter.ts[this file].
 
 TIP: Explore the whole link:../utils/[directory] as each utility function is unique and can be used in different places.
 
@@ -156,9 +156,9 @@ IMPORTANT: The validation schema should be created in the same directory as the 
 
 ==== **Example**
 
-See the example validation schema in link:../validation/product/primitiveOps.ts[this file].
+See the example validation schema in link:../src/validation/product/primitiveOps.ts[this file].
 
-See the example `index.ts` file in link:../validation/product/index.ts[this file].
+See the example `index.ts` file in link:../src/validation/product/index.ts[this file].
 
 === **_New Route Creation_**
 
@@ -181,9 +181,9 @@ NOTE: All Routes have a version prefix which is implemented in the link:./index.
 
 ==== **Example**
 
-See the example of a **public** route in link:../routes/public/productRoutes.ts[this file].
+See the example of a **public** route in link:../src/routes/public/productRoutes.ts[this file].
 
-See the example of a **private** route in link:../routes/private/categoryRoutes.ts[this file].
+See the example of a **private** route in link:../src/routes/private/categoryRoutes.ts[this file].
 
 === **_New Test Creation_**
 

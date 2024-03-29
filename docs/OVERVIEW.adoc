@@ -5,6 +5,9 @@
 == Introduction
 This document provides an overview of the project. For more detailed information, please refer to the specific documents linked below.
 
+== Understanding the Project Logic
+To understand the entire logic of the project, please read link:./HOW_WORKS.adoc[How the Project Works].
+
 == Directory Structure
 For a detailed explanation of the project's directory structure, see link:./STRUCTURE.adoc[Project Directory Structure].
 
