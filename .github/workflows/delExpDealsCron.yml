@@ -2,7 +2,7 @@ name: Delete Expired Deals
 
 on:
     schedule:
-        - cron: '* */4 * * *'
+        - cron: '0 */12 * * *'
 
 jobs:
     DeleteExpiredDealsJob:

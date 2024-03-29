@@ -9,7 +9,7 @@ async function dealetedExpiredDeals() {
         .connect(process.env.MONGO_URI as string)
         .then(() => {
             // Log a message when the database connection is successful
-            console.log("db connected !");
+            console.log('db connected! :)');
 
             // Delete all deals where the end date is less than or equal to the current date/time
             Deals.deleteMany({
@@ -40,7 +40,7 @@ async function dealetedExpiredDeals() {
     console.log("query to delete expired Deals has been sent to db!");
 
     // Log a message indicating that the process is exiting
-    console.log("exiting ...");
+    console.log("exiting... ^___^");
 
     // Exit the process with a success status code
     process.exit(0);

@@ -1,24 +1,36 @@
 // Import necessary modules
-import express from "express";
+import express from 'express';
 
 // Import deal controllers
-import * as dealControllers from "@controllers/public/deals";
+import * as dealControllers from '@controllers/public/deals';
 
-// Import validation middlewares
-import checkForAccessToken from "@middlewares/accessTokenCheck";
-import checkForBusiness from "@middlewares/businessCheck";
-import checkForDeal from "@middlewares/dealCheck";
-import { validateBody, validateParams } from "@middlewares/inputValidator";
-import checkForProduct from "@middlewares/productCheck";
+// Import middlewares
+import checkForAccessToken from '@middlewares/accessTokenCheck';
+import checkForBusiness from '@middlewares/businessCheck';
+import checkForDeal from '@middlewares/dealCheck';
+import { validateBody, validateParams } from '@middlewares/inputValidator';
+import checkForProduct from '@middlewares/productCheck';
+import * as limiters from '../../config/rateLimiter';
 
 // Import error handling middleware
-import handleError from "@middlewares/errorHandler";
+import handleError from '@middlewares/errorHandler';
 
 // Import schemas for validation
-import * as dealSchemas from "@validations/deal";
+import * as dealSchemas from '@validations/deal';
 
 // Initialize a new router
 const router = express.Router();
+
+router.get(
+    '/:userId',
+    limiters.getDealLimiter,
+    checkForAccessToken,
+    validateParams({ schema: dealSchemas.getDealsParams }),
+    validateBody({ schema: dealSchemas.getDealsBody, entity: 'userData' }),
+    dealControllers.getDeals,
+);
+
+router.use(limiters.stdLimiter);
 
 // Apply 'checkForAccessToken' middleware to all subsequent routes
 router.use(checkForAccessToken);
@@ -27,24 +39,24 @@ router.use(checkForAccessToken);
 // The request body is validated against the newDealSchema
 // The 'dealData' entity in the request body is specifically validated
 router.post(
-    "/new",
+    '/new',
     validateBody({
         schema: dealSchemas.newDeal,
-        entity: "dealData",
+        entity: 'dealData',
     }),
     checkForBusiness({
-        checkIn: "body",
-        bodyEntity: "dealData",
-        entity: "businessId",
+        checkIn: 'body',
+        bodyEntity: 'dealData',
+        entity: 'businessId',
         passIfExists: true,
-        key: "_id",
+        key: '_id',
     }),
     checkForProduct({
-        checkIn: "body",
-        bodyEntity: "dealData",
-        entity: "productId",
+        checkIn: 'body',
+        bodyEntity: 'dealData',
+        entity: 'productId',
         passIfExists: true,
-        key: "_id",
+        key: '_id',
     }),
     dealControllers.newDeal,
 );
@@ -52,23 +64,16 @@ router.post(
 // Define a DELETE route for deleting a deal
 // The route parameters are validated against the delDealSchema
 router.delete(
-    "/:dealId",
+    '/:dealId',
     validateParams({ schema: dealSchemas.delDeal }),
     checkForDeal({
-        checkIn: "params",
+        checkIn: 'params',
         bodyEntity: null,
-        entity: "dealId",
+        entity: 'dealId',
         passIfExists: true,
-        key: "_id",
+        key: '_id',
     }),
     dealControllers.delDeal,
-);
-
-router.get(
-    "/:userId",
-    validateParams({ schema: dealSchemas.getDealsParams }),
-    validateBody({ schema: dealSchemas.getDealsBody, entity: "userData" }),
-    dealControllers.getDeals,
 );
 
 // Use the handleError middleware for error handling
