@@ -1,8 +1,4 @@
-import Joi from "joi";
-
-export const getDealsParams = Joi.object({
-    userId: Joi.string().length(24).required(),
-});
+import Joi from 'joi';
 
 export const getDealsBody = Joi.object({
     currentLocation: Joi.array().items(Joi.number()).length(2).required(),
