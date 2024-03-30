@@ -22,10 +22,9 @@ import * as dealSchemas from '@validations/deal';
 const router = express.Router();
 
 router.get(
-    '/:userId',
+    '/',
     limiters.getDealLimiter,
     checkForAccessToken,
-    validateParams({ schema: dealSchemas.getDealsParams }),
     validateBody({ schema: dealSchemas.getDealsBody, entity: 'userData' }),
     dealControllers.getDeals,
 );
