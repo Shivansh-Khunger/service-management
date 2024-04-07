@@ -20,7 +20,7 @@ async function connectToDb() {
                 '-> an error has occured while connecting to the db!',
             );
 
-            logger.fatal('server is closing... (＞︿＜)');
+            logger.fatal('server is closing... :[');
             process.exit(1);
         });
 }
