@@ -1,6 +1,6 @@
 == Introduction
 
-image::https://i.ibb.co/3h5wKps/Designer.png[iJUJU Logo,256,256,align="center"]
+image::https://i.ibb.co/3h5wKps/Designer.png[iJUJU Logo,256,256]
 
 **iJUJU** is a location-based marketplace that brings you deals from local businesses as you're on the go. This is the official API for the front-end developers of iJUJU. While it's not exclusively focused on them, it is primarily intended for their use as of now. 
 
